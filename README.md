@@ -1,20 +1,21 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+KnowledgeSpace is open source project for everyone. Every member can create new knowledge base record (KB) and share community.
+For each KB, user can vote it and comment to below KB.
+
+# Technology stack
+1.  Asp.Net Core 3.1
+2.	Angular 8
+3.  Identity Server 4
+4.  SQL Server 2019
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+1.	Clone this source code from Repository
+2.  Build Solution to restore all Nuget Packages
+3.	Set startup project is KnowledgeSpace.BackendServer
+4.	Run update Database to generate database
+5.	Set startup project to multiple projects include: KnowledgeSpace.BackendServer and KnowledgeSpace.WebPortal
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
-
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+# References
+- [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-3.1)
+- [Visual Studio](https://visualstudio.microsoft.com/)
+- [Identity Server4](https://identityserver.io/)
