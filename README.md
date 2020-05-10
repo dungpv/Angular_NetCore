@@ -19,3 +19,9 @@ For each KB, user can vote it and comment to below KB.
 - [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-3.1)
 - [Visual Studio](https://visualstudio.microsoft.com/)
 - [Identity Server4](https://identityserver.io/)
+
+# Commands
+1.  Migration
+	Add-Migration Initial -OutputDir Data/Migrations
+2. Update database
+	Update-Database
