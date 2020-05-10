@@ -25,3 +25,7 @@ For each KB, user can vote it and comment to below KB.
 	Add-Migration Initial -OutputDir Data/Migrations
 2. Update database
 	Update-Database
+
+# Git references
+- [Tedu] (https://dev.azure.com/tedu-official/KnowledgeSpace/_git/KnowledgeSpace)
+- [For Me] (https://dev.azure.com/vietdungst0043/Learning_Angular_NetCore/_git/Learning_Angular_NetCore)
