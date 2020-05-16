@@ -29,3 +29,6 @@ For each KB, user can vote it and comment to below KB.
 # Git references
 - [Tedu] (https://dev.azure.com/tedu-official/KnowledgeSpace/_git/KnowledgeSpace)
 - [For Me] (https://dev.azure.com/vietdungst0043/Learning_Angular_NetCore/_git/Learning_Angular_NetCore)
+
+# Link Notes
+https://medium.com/eway/nguy%C3%AAn-t%E1%BA%AFc-thi%E1%BA%BFt-k%E1%BA%BF-rest-api-23add16968d7
