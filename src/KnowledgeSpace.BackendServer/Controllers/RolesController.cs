@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.ViewModels.Systems;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +15,12 @@ namespace KnowledgeSpace.BackendServer.Controllers
     public class RolesController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        public RolesController(RoleManager<IdentityRole> roleManager)
+        private readonly ApplicationDbContext _context;
+        public RolesController(RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext context)
         {
             _roleManager = roleManager;
+            _context = context;
         }
 
         // URL: POST: http://localhost:5001/api/roles
@@ -55,21 +59,21 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: GET
         [HttpGet]
-        public async Task<IActionResult> GetAllRoles()
+        public async Task<IActionResult> GetRoles()
         {
-            var roles = await _roleManager.Roles
-                .Select(r => new RoleVm() {
-                            Id = r.Id,
-                            Name = r.Name,
-                        }).ToListAsync();
-            if (roles == null)
-                return NotFound();
+            var roles = await _roleManager.Roles.ToListAsync();
 
-            return Ok(roles);
+            var rolevms =  roles.Select(r => new RoleVm()
+            {
+                Id = r.Id,
+                Name = r.Name
+            });
+
+            return Ok(rolevms);
         }
         // URL: GET: http://localhost:5001/api/roles/?quer
         [HttpGet]
-        public async Task<IActionResult> GetRoles(string filter, int pageIndex, int pageSize)
+        public async Task<IActionResult> GetRolesPaging(string filter, int pageIndex, int pageSize)
         {
             var query = _roleManager.Roles;
             if (!string.IsNullOrEmpty(filter))
@@ -95,7 +99,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: PUT: http://localhost:5001/api/roles/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRole(string id, RoleVm roleVm)
+        public async Task<IActionResult> PutRole(string id, [FromBody]RoleCreateRequest roleVm)
         {
             if (id != roleVm.Id)
                 return BadRequest();
