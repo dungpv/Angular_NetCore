@@ -43,7 +43,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
         }
         // URL: GET: http://localhost:5001/api/roles/{id}
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
@@ -72,7 +72,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             return Ok(rolevms);
         }
         // URL: GET: http://localhost:5001/api/roles/?quer
-        [HttpGet]
+        [HttpGet("filter")]
         public async Task<IActionResult> GetRolesPaging(string filter, int pageIndex, int pageSize)
         {
             var query = _roleManager.Roles;
