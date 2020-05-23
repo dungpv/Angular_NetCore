@@ -136,7 +136,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 return NoContent();
             }
-            return BadRequest();
+            return BadRequest(result.Errors);
         }
 
         // URL: DELETE: http://localhost:5001/api/Users/{id}
@@ -163,7 +163,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 };
                 return Ok(uservm);
             }
-            return BadRequest();
+            return BadRequest(result.Errors);
         }
     }
 }
