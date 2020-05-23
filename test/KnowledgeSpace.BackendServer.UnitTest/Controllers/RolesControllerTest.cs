@@ -42,7 +42,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         {
             _mockRoleManager.Setup(x => x.CreateAsync(It.IsAny<IdentityRole>())).ReturnsAsync(IdentityResult.Success);
             var rolesController = new RolesController(_mockRoleManager.Object, _context);
-            var result = await rolesController.PostRole(new ViewModels.Systems.RoleVm()
+            var result = await rolesController.PostRole(new ViewModels.Systems.RoleCreateRequest()
             {
                 Id = "test",
                 Name = "test"
@@ -56,7 +56,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
             _mockRoleManager.Setup(x => x.CreateAsync(It.IsAny<IdentityRole>()))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError[] { }));
             var rolesController = new RolesController(_mockRoleManager.Object, _context);
-            var result = await rolesController.PostRole(new ViewModels.Systems.RoleVm()
+            var result = await rolesController.PostRole(new ViewModels.Systems.RoleCreateRequest()
             {
                 Id = "test",
                 Name = "test"

@@ -2,7 +2,7 @@
 
 namespace KnowledgeSpace.ViewModels.Systems
 {
-    public class RoleVmValidator : AbstractValidator<RoleVm>
+    public class RoleVmValidator : AbstractValidator<RoleCreateRequest>
     {
         public RoleVmValidator()
         {
