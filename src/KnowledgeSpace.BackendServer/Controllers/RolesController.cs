@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KnowledgeSpace.BackendServer.Data;
+using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.ViewModels.Systems;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -137,6 +138,40 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }    
 
             return BadRequest(result.Errors);
+        }
+        [HttpGet("{roleId}/permissions")]
+        public async Task<IActionResult> GetPermissionsByRoleId(string roleId)
+        {
+            var permissions = from p in _context.Permissions
+
+                              join a in _context.Commands
+                              on p.CommandId equals a.Id
+                              where p.RoleId == roleId
+                              select new PermissionVm()
+                              {
+                                  FunctionId = p.FunctionId,
+                                  CommandId = p.CommandId,
+                                  RoleId = p.RoleId
+                              };
+
+            return Ok(await permissions.ToListAsync());
+        }
+        [HttpPut("{roleId}/permissions")]
+        public async Task<IActionResult> PutPermissionsByRoleId(string roleId, [FromBody] UpdatePermissionRequest request)
+        {
+            var newPermissions = new List<Permission>();
+            foreach(var p in request.Permissions)
+            {
+                newPermissions.Add(new Permission(p.FunctionId, p.RoleId, p.CommandId));
+            }
+
+            var existingPermissons = _context.Permissions.Where(x => x.RoleId == roleId);
+            _context.Permissions.RemoveRange(existingPermissons);
+            _context.Permissions.AddRange(newPermissions);
+            var result = await _context.SaveChangesAsync();
+            if (result > 0)
+                return NoContent();
+            return BadRequest();
         }
     }
 }

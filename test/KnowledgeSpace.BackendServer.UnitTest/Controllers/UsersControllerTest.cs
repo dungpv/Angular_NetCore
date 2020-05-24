@@ -18,8 +18,9 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
     public class UsersControllerTest
     {
         private readonly Mock<UserManager<User>> _mockUserManager;
+        private readonly Mock<RoleManager<IdentityRole>> _mockRoleManager;
         private ApplicationDbContext _context;
-        private List<User> _roleSources = new List<User>(){
+        private List<User> _userSources = new List<User>(){
                              new User("1", "test1", "Test 1", "LastTest 1", "test1@gmail.com", "001111", DateTime.Now),
                              new User("2", "test2", "Test 2", "LastTest 2", "test2@gmail.com", "002222", DateTime.Now),
                              new User("3", "test3", "Test 3", "LastTest 3", "test3@gmail.com", "003333", DateTime.Now),
@@ -29,14 +30,16 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         {
             var userStore = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(userStore.Object, null, null, null, null, null, null, null, null);
-            _mockUserManager.Object.UserValidators.Add(new UserValidator<User>());
-            _mockUserManager.Object.PasswordValidators.Add(new PasswordValidator<User>());
+            //_mockUserManager.Object.UserValidators.Add(new UserValidator<User>());
+            //_mockUserManager.Object.PasswordValidators.Add(new PasswordValidator<User>());
+            var roleStore = new Mock<IRoleStore<IdentityRole>>();
+            _mockRoleManager = new Mock<RoleManager<IdentityRole>>(roleStore.Object, null, null, null, null);
             _context = new InMemoryDbContextFactory().GetApplicationDbContext();
         }
         [Fact]
         public void ShouldCreateInstance_NotNull_Success()
         {
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             Assert.NotNull(usersController);
         }
 
@@ -46,7 +49,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
             _mockUserManager.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
 
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.PostUser(new ViewModels.Systems.UserCreateRequest()
             {
                 UserName = "test"
@@ -59,7 +62,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         {
             _mockUserManager.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError[] { }));
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.PostUser(new ViewModels.Systems.UserCreateRequest()
             {
                 UserName = "test"
@@ -71,8 +74,8 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         public async Task GetUsers_HasData_ReturnSuccess()
         {
             _mockUserManager.Setup(x => x.Users)
-                .Returns(_roleSources.AsQueryable().BuildMock().Object);
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+                .Returns(_userSources.AsQueryable().BuildMock().Object);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.GetUsers();
             var okResult = result as OkObjectResult;
             var userVms = okResult.Value as IEnumerable<UserVm>;
@@ -83,7 +86,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         {
             _mockUserManager.Setup(x => x.Users)
                 .Throws<Exception>();
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             await Assert.ThrowsAnyAsync<Exception>(async() => await usersController.GetUsers());
 
         }
@@ -91,9 +94,9 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         public async Task GetUsersPaging_NoFilter_ReturnSuccess()
         {
             _mockUserManager.Setup(x => x.Users)
-                .Returns(_roleSources.AsQueryable().BuildMock().Object);
+                .Returns(_userSources.AsQueryable().BuildMock().Object);
 
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.GetUsersPaging(null, 1, 2);
             var okResult = result as OkObjectResult;
             var userVms = okResult.Value as Pagination<UserVm>;
@@ -105,9 +108,9 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         public async Task GetUsersPaging_HasFilter_ReturnSuccess()
         {
             _mockUserManager.Setup(x => x.Users)
-                .Returns(_roleSources.AsQueryable().BuildMock().Object);
+                .Returns(_userSources.AsQueryable().BuildMock().Object);
 
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.GetUsersPaging("test3", 1, 2);
             var okResult = result as OkObjectResult;
             var userVms = okResult.Value as Pagination<UserVm>;
@@ -120,7 +123,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         {
             _mockUserManager.Setup(x => x.Users).Throws<Exception>();
 
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
 
             await Assert.ThrowsAnyAsync<Exception>(async () => await usersController.GetUsersPaging(null, 1, 1));
         }
@@ -133,7 +136,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
                 {
                     UserName = "test1"
                 });
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.GetById("test1");
             var okResult = result as OkObjectResult;
             Assert.NotNull(okResult);
@@ -148,7 +151,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         {
             _mockUserManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Throws<Exception>();
 
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
 
             await Assert.ThrowsAnyAsync<Exception>(async () => await usersController.GetById("test1"));
         }
@@ -164,7 +167,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
 
             _mockUserManager.Setup(x => x.UpdateAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Success);
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.PutUser("test", new UserCreateRequest()
             {
                 FirstName = "test2"
@@ -186,7 +189,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
             _mockUserManager.Setup(x => x.UpdateAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError[] { }));
 
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.PutUser("test", new UserCreateRequest()
             {
                 UserName = "test1"
@@ -207,7 +210,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
 
             _mockUserManager.Setup(x => x.DeleteAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Success);
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.DeleteUser("test");
             Assert.IsType<OkObjectResult>(result);
         }
@@ -224,7 +227,7 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
             _mockUserManager.Setup(x => x.DeleteAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError[] { }));
 
-            var usersController = new UsersController(_mockUserManager.Object, _context);
+            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
             var result = await usersController.DeleteUser("test");
             Assert.IsType<BadRequestObjectResult>(result);
         }
