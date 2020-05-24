@@ -23,7 +23,11 @@ namespace KnowledgeSpace.BackendServer.Controllers
         [HttpPost]
         public async Task<IActionResult> PostFunction([FromBody]FunctionCreateRequest request)
         {
-            var Function = new Function()
+            var dbFunction = await _context.Functions.FindAsync(request.Id);
+            if (dbFunction == null)
+                return BadRequest($"Function with Id {request.Id} is existed");
+
+            var function = new Function()
             {
                 Id = request.Id,
                 Name = request.Name,
@@ -31,11 +35,11 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 SortOrder = request.SortOrder,
                 Url = request.Url,
             };
-            _context.Functions.Add(Function);
+            _context.Functions.Add(function);
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {
-                return CreatedAtAction(nameof(GetById), new { id = Function.Id }, request);
+                return CreatedAtAction(nameof(GetById), new { id = function.Id }, request);
             }
             else
             {
