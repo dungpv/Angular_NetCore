@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
+using KnowledgeSpace.BackendServer.Services;
 using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +16,13 @@ namespace KnowledgeSpace.BackendServer.Controllers
     public class KnowledgeBasesController : BaseController
     {
         private readonly ApplicationDbContext _context;
-        public KnowledgeBasesController(ApplicationDbContext context)
+        private readonly SequenceService _sequenceService;
+        public KnowledgeBasesController(ApplicationDbContext context, SequenceService sequenceService)
         {
             _context = context;
+            _sequenceService = sequenceService;
         }
+        #region Knowledge base
         [HttpPost]
         public async Task<IActionResult> PostKnowledgeBase([FromBody]KnowledgeBaseCreateRequest request)
         {
@@ -36,6 +40,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Note = request.Note,
                 Labels = request.Labels,
             };
+            knowledgeBase.Id = await _sequenceService.GetKnowledgeBaseNewId();
             _context.KnowledgeBases.Add(knowledgeBase);
             var result = await _context.SaveChangesAsync();
             if (result > 0)
@@ -92,6 +97,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             };
             return Ok(pagination);
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -99,27 +105,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             if (knowledgeBase == null)
                 return NotFound();
 
-            var knowledgeBaseVm = new KnowledgeBaseVm()
-            {
-                Id = knowledgeBase.Id,
-                CategoryId = knowledgeBase.CategoryId,
-                Title = knowledgeBase.Title,
-                SeoAlias = knowledgeBase.SeoAlias,
-                Description = knowledgeBase.Description,
-                Environment = knowledgeBase.Environment,
-                Problem = knowledgeBase.Problem,
-                StepToReproduce = knowledgeBase.StepToReproduce,
-                ErrorMessage = knowledgeBase.ErrorMessage,
-                Workaround = knowledgeBase.Workaround,
-                Note = knowledgeBase.Note,
-                OwnerUserId = knowledgeBase.OwnerUserId,
-                Labels = knowledgeBase.Labels,
-                CreateDate = knowledgeBase.CreateDate,
-                LastModifiedDate = knowledgeBase.LastModifiedDate,
-                NumberOfComments = knowledgeBase.NumberOfComments,
-                NumberOfVotes = knowledgeBase.NumberOfVotes,
-                NumberOfReports = knowledgeBase.NumberOfReports,
-            };
+            var knowledgeBaseVm = CreateKnowledgeBaseVm(knowledgeBase);
             return Ok(knowledgeBaseVm);
         }
         // URL: PUT: http://localhost:5001/api/KnowledgeBases/{id}
@@ -164,30 +150,152 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             if (result > 0)
             {
-                var knowledgeBasevm = new KnowledgeBaseVm()
-                {
-                    Id = knowledgeBase.Id,
-                    CategoryId = knowledgeBase.CategoryId,
-                    Title = knowledgeBase.Title,
-                    SeoAlias = knowledgeBase.SeoAlias,
-                    Description = knowledgeBase.Description,
-                    Environment = knowledgeBase.Environment,
-                    Problem = knowledgeBase.Problem,
-                    StepToReproduce = knowledgeBase.StepToReproduce,
-                    ErrorMessage = knowledgeBase.ErrorMessage,
-                    Workaround = knowledgeBase.Workaround,
-                    Note = knowledgeBase.Note,
-                    OwnerUserId = knowledgeBase.OwnerUserId,
-                    Labels = knowledgeBase.Labels,
-                    CreateDate = knowledgeBase.CreateDate,
-                    LastModifiedDate = knowledgeBase.LastModifiedDate,
-                    NumberOfComments = knowledgeBase.NumberOfComments,
-                    NumberOfVotes = knowledgeBase.NumberOfVotes,
-                    NumberOfReports = knowledgeBase.NumberOfReports,
-                };
-                return Ok(knowledgeBasevm);
+                var knowledgeBaseVm = CreateKnowledgeBaseVm(knowledgeBase);
+                return Ok(knowledgeBaseVm);
             }
             return BadRequest();
         }
+
+        private static KnowledgeBaseVm CreateKnowledgeBaseVm(KnowledgeBase knowledgeBase)
+        {
+            return new KnowledgeBaseVm()
+            {
+                Id = knowledgeBase.Id,
+                CategoryId = knowledgeBase.CategoryId,
+                Title = knowledgeBase.Title,
+                SeoAlias = knowledgeBase.SeoAlias,
+                Description = knowledgeBase.Description,
+                Environment = knowledgeBase.Environment,
+                Problem = knowledgeBase.Problem,
+                StepToReproduce = knowledgeBase.StepToReproduce,
+                ErrorMessage = knowledgeBase.ErrorMessage,
+                Workaround = knowledgeBase.Workaround,
+                Note = knowledgeBase.Note,
+                OwnerUserId = knowledgeBase.OwnerUserId,
+                Labels = knowledgeBase.Labels,
+                CreateDate = knowledgeBase.CreateDate,
+                LastModifiedDate = knowledgeBase.LastModifiedDate,
+                NumberOfComments = knowledgeBase.NumberOfComments,
+                NumberOfVotes = knowledgeBase.NumberOfVotes,
+                NumberOfReports = knowledgeBase.NumberOfReports,
+            };
+        }
+        #endregion
+        #region Comment
+        [HttpGet("{knowledgeBaseId}/comments/filter")]
+        public async Task<IActionResult> GetCommentPaging(int knowledgeBaseId, string filter, int pageIndex, int pageSize)
+        {
+            var query = _context.Comments.Where(x => x.KnowledgeBaseId == knowledgeBaseId).AsQueryable();
+            if (!string.IsNullOrEmpty(filter))
+            {
+                query = query.Where(x => x.Content.Contains(filter));
+            }
+            var totalRecords = await query.CountAsync();
+            var items = await query.Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .Select(c => new CommentVm()
+                {
+                    Id = c.Id,
+                    Content = c.Content,
+                    CreateDate = c.CreateDate,
+                    KnowledgeBaseId = c.KnowledgeBaseId,
+                    LastModifiedDate = c.LastModifiedDate,
+                    OwnerUserId = c.OwnwerUserId,
+                })
+                .ToListAsync();
+
+            var pagination = new Pagination<CommentVm>
+            {
+                Items = items,
+                TotalRecords = totalRecords,
+            };
+            return Ok(pagination);
+        }
+        [HttpGet("{knowledgeBaseId}/comments/{commentId}")]
+        public async Task<IActionResult> GetCommentDetail(int commentId)
+        {
+            var comment = await _context.Comments.FindAsync(commentId);
+            if (comment == null)
+                return NotFound();
+
+            var commentVm = new CommentVm() {
+                Id = comment.Id,
+                Content = comment.Content,
+                CreateDate = comment.CreateDate,
+                KnowledgeBaseId = comment.KnowledgeBaseId,
+                LastModifiedDate = comment.LastModifiedDate,
+                OwnerUserId = comment.OwnwerUserId,
+            };
+            return Ok(commentVm);
+        }
+
+        [HttpPost("{knowledgeBaseId}/comments/{commentId}")]
+        public async Task<IActionResult> GetCommentDetail(int knowledgeBaseId, [FromBody]CommentCreateRequest request)
+        {
+            var comment = new Comment()
+            {
+                Content = request.Content,
+                KnowledgeBaseId = request.KnowledgeBaseId,
+                OwnwerUserId = string.Empty,
+            };
+            _context.Comments.Add(comment);
+            var result = await _context.SaveChangesAsync();
+            if (result > 0)
+            {
+                return CreatedAtAction(nameof(GetCommentDetail), new { id = knowledgeBaseId, commentId = comment.Id }, request);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("{knowledgeBaseId}/comments/{commentId}")]
+        public async Task<IActionResult> PutComment(int commentId, [FromBody]CommentCreateRequest request)
+        {
+            var comment = await _context.Comments.FindAsync(commentId);
+            if (comment == null)
+                return NotFound();
+            if (comment.OwnwerUserId != User.Identity.Name)
+                return Forbid();
+
+            comment.Content = request.Content;
+            _context.Comments.Update(comment);
+
+            var result = await _context.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                return NoContent();
+            }
+            return BadRequest();
+        }
+
+        [HttpDelete("{knowledgeBaseId}/comments/{commentId}")]
+        public async Task<IActionResult> DeleteComment(int commentId)
+        {
+            var comment = await _context.Comments.FindAsync(commentId);
+            if (comment == null)
+                return NotFound();
+
+            _context.Comments.Remove(comment);
+
+            var result = await _context.SaveChangesAsync();
+            if (result > 0)
+            {
+                var commentVm = new CommentVm()
+                {
+                    Id = comment.Id,
+                    Content = comment.Content,
+                    CreateDate = comment.CreateDate,
+                    KnowledgeBaseId = comment.KnowledgeBaseId,
+                    LastModifiedDate = comment.LastModifiedDate,
+                    OwnerUserId = comment.OwnwerUserId
+                };
+                return Ok(commentVm);
+            }
+            return BadRequest();
+        }
+        #endregion
     }
 }

@@ -12,8 +12,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace KnowledgeSpace.BackendServer.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class FunctionsController : BaseController
     {
         private readonly ApplicationDbContext _context;
