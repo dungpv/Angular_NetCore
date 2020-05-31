@@ -14,8 +14,6 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
 
         public int? KnowledgeBaseId { get; set; }
 
-        public int? CommentId { get; set; }
-
         [MaxLength(500)]
         public string Content { get; set; }
 
@@ -28,8 +26,5 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
 
         public bool IsProcessed { get; set; }
 
-        [MaxLength(50)]
-        [Column(TypeName = "varchar(50)")]
-        public string Type { get; set; }
     }
 }
