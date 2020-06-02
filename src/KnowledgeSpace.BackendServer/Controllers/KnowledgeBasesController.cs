@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using KnowledgeSpace.BackendServer.Authorization;
+using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Helper;
@@ -30,6 +32,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         #region Knowledge base
         [HttpPost]
+        [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.CREATE)]
         public async Task<IActionResult> PostKnowledgeBase([FromBody]KnowledgeBaseCreateRequest request)
         {
             var knowledgeBase = new KnowledgeBase()
@@ -76,6 +79,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
 
         [HttpGet]
+        [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.VIEW)]
         public async Task<IActionResult> GetKnowledgeBases()
         {
             var knowledgeBases = _context.KnowledgeBases;
@@ -93,6 +97,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: GET: http://localhost:5001/api/KnowledgeBases/?quer
         [HttpGet("filter")]
+        [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.VIEW)]
         public async Task<IActionResult> GetKnowledgeBasesPaging(string filter, int pageIndex, int pageSize)
         {
             var query = _context.KnowledgeBases.AsQueryable();
@@ -122,6 +127,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
 
         [HttpGet("{id}")]
+        [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.VIEW)]
         public async Task<IActionResult> GetById(int id)
         {
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(id);
@@ -133,6 +139,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: PUT: http://localhost:5001/api/KnowledgeBases/{id}
         [HttpPut("{id}")]
+        [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.UPDATE)]
         public async Task<IActionResult> PutKnowledgeBase(int id, [FromBody]KnowledgeBaseCreateRequest request)
         {
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(id);
@@ -167,6 +174,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         // URL: DELETE: http://localhost:5001/api/KnowledgeBases/{id}
         [HttpDelete("{id}")]
+        [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.DELETE)]
         public async Task<IActionResult> DeleteKnowledgeBase(int id)
         {
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(id);
@@ -228,6 +236,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         #region Comment
         [HttpGet("{knowledgeBaseId}/comments/filter")]
+        [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.VIEW)]
         public async Task<IActionResult> GetCommentPaging(int knowledgeBaseId, string filter, int pageIndex, int pageSize)
         {
             var query = _context.Comments.Where(x => x.KnowledgeBaseId == knowledgeBaseId).AsQueryable();
@@ -257,6 +266,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             return Ok(pagination);
         }
         [HttpGet("{knowledgeBaseId}/comments/{commentId}")]
+        [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.VIEW)]
         public async Task<IActionResult> GetCommentDetail(int commentId)
         {
             var comment = await _context.Comments.FindAsync(commentId);
@@ -275,6 +285,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
 
         [HttpPost("{knowledgeBaseId}/comments/{commentId}")]
+        [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.VIEW)]
         public async Task<IActionResult> GetCommentDetail(int knowledgeBaseId, [FromBody]CommentCreateRequest request)
         {
             var comment = new Comment()
@@ -295,6 +306,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
         }
         [HttpPost("{knowledgeBaseId}/comments")]
+        [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.CREATE)]
         public async Task<IActionResult> PostComment(int knowledgeBaseId, [FromBody]CommentCreateRequest request)
         {
             var comment = new Comment()
@@ -326,6 +338,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
         }
         [HttpPut("{knowledgeBaseId}/comments/{commentId}")]
+        [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.UPDATE)]
         public async Task<IActionResult> PutComment(int commentId, [FromBody]CommentCreateRequest request)
         {
             var comment = await _context.Comments.FindAsync(commentId);
@@ -347,6 +360,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
 
         [HttpDelete("{knowledgeBaseId}/comments/{commentId}")]
+        [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.DELETE)]
         public async Task<IActionResult> DeleteComment(int knowledgeBaseId,int commentId)
         {
             var comment = await _context.Comments.FindAsync(commentId);

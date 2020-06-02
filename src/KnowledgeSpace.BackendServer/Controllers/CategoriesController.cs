@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KnowledgeSpace.BackendServer.Authorization;
+using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.ViewModels.Contents;
@@ -20,6 +22,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             _context = context;
         }
         [HttpPost]
+        [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.CREATE)]
         public async Task<IActionResult> PostCategory([FromBody]CategoryCreateRequest request)
         {
             var category = new Category()
@@ -43,6 +46,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: GET: http://localhost:5001/api/Category/{id}
         [HttpGet("{id}")]
+        [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.VIEW)]
         public async Task<IActionResult> GetById(string id)
         {
             var category = await _context.Categories.FindAsync(id);
@@ -54,6 +58,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: GET
         [HttpGet]
+        [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.VIEW)]
         public async Task<IActionResult> GetCategories()
         {
             var categories = await _context.Categories.ToListAsync();
@@ -64,6 +69,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: GET: http://localhost:5001/api/Category/?quer
         [HttpGet("filter")]
+        [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.VIEW)]
         public async Task<IActionResult> GetCategoryPaging(string filter, int pageIndex, int pageSize)
         {
             var query = _context.Categories.AsQueryable();
@@ -85,6 +91,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: PUT: http://localhost:5001/api/Category/{id}
         [HttpPut("{id}")]
+        [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.UPDATE)]
         public async Task<IActionResult> PutCategory(int id, [FromBody]CategoryCreateRequest request)
         {
             var category = await _context.Categories.FindAsync(id);
@@ -111,6 +118,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         // URL: DELETE: http://localhost:5001/api/Category/{id}
         [HttpDelete("{id}")]
+        [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.DELETE)]
         public async Task<IActionResult> DeleteCategory(string id)
         {
             var category = await _context.Categories.FindAsync(id);
