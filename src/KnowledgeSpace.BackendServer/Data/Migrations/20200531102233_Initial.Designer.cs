@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KnowledgeSpace.BackendServer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200510091045_Initial")]
+    [Migration("20200531102233_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -70,9 +70,6 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CommentId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
@@ -99,11 +96,6 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
 
                     b.Property<DateTime?>("LastModifiedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasMaxLength(10);
 
                     b.HasKey("Id");
 
@@ -237,9 +229,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
             modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.KnowledgeBase", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -363,9 +353,6 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CommentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(500)")
                         .HasMaxLength(500);
@@ -383,10 +370,6 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ReportUserId")
-                        .HasColumnType("varchar(50)")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("Type")
                         .HasColumnType("varchar(50)")
                         .HasMaxLength(50);
 

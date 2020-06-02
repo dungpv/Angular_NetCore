@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using KnowledgeSpace.BackendServer.Data;
@@ -19,10 +21,12 @@ namespace KnowledgeSpace.BackendServer.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly SequenceService _sequenceService;
-        public KnowledgeBasesController(ApplicationDbContext context, SequenceService sequenceService)
+        private readonly IStorageService _storageService;
+        public KnowledgeBasesController(ApplicationDbContext context, SequenceService sequenceService, IStorageService storageService)
         {
             _context = context;
             _sequenceService = sequenceService;
+            _storageService = storageService;
         }
         #region Knowledge base
         [HttpPost]
@@ -43,6 +47,15 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Labels = request.Labels,
             };
             knowledgeBase.Id = await _sequenceService.GetKnowledgeBaseNewId();
+            //process attachment
+            if (request.Attachments != null && request.Attachments.Count > 0)
+            {
+                foreach (var attachment in request.Attachments)
+                {
+                    var attachmentEntity = await SaveFile(knowledgeBase.Id, attachment);
+                    _context.Attachments.Add(attachmentEntity);
+                }
+            }
             _context.KnowledgeBases.Add(knowledgeBase);
 
             //process labels
@@ -50,7 +63,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 await ProcessLabel(request, knowledgeBase);
             }
-
+  
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {
@@ -194,6 +207,22 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 NumberOfVotes = knowledgeBase.NumberOfVotes,
                 NumberOfReports = knowledgeBase.NumberOfReports,
             };
+        }
+
+        private async Task<Attachment> SaveFile(int knowledegeBaseId, IFormFile file)
+        {
+            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
+            var attachmentEntity = new Attachment()
+            {
+                FileName = fileName,
+                FilePath = _storageService.GetFileUrl(fileName),
+                FileSize = file.Length,
+                FileType = Path.GetExtension(fileName),
+                KnowledgeBaseId = knowledegeBaseId,
+            };
+            return attachmentEntity;
         }
         #endregion
 
@@ -578,5 +607,41 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         #endregion
 
+        #region Attachments
+        [HttpGet("{knowledgeBaseId}/attachments")]
+        public async Task<IActionResult> GetAttachment(int knowledgeBaseId)
+        {
+            var query = await _context.Attachments.Where(x => x.KnowledgeBaseId == knowledgeBaseId)
+                .Select(c => new AttachmentVm()
+                {
+                    Id = c.Id,
+                    FileName = c.FileName,
+                    FilePath = c.FilePath,
+                    FileType = c.FileType,
+                    FileSize = c.FileSize,
+                    KnowledgeBaseId = c.KnowledgeBaseId,
+                    CreateDate = c.CreateDate,
+                    LastModifiedDate = c.LastModifiedDate,
+                }).ToListAsync(); ;
+
+            return Ok();
+        }
+        [HttpDelete("{knowledgeBaseId}/attachments/{attachmentId}")]
+        public async Task<IActionResult> DeleteAttachment(int knowledgeBaseId, int attachmentId)
+        {
+            var attachment = await _context.Attachments.FindAsync(attachmentId);
+            if (attachment == null)
+                return NotFound();
+
+            _context.Attachments.Remove(attachment);
+
+            var result = await _context.SaveChangesAsync();
+            if (result > 0)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+        #endregion
     }
 }
