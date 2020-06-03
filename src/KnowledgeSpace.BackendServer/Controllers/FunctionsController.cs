@@ -12,21 +12,25 @@ using Microsoft.Extensions.Configuration;
 using KnowledgeSpace.BackendServer.Authorization;
 using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Helper;
+using Microsoft.Extensions.Logging;
 
 namespace KnowledgeSpace.BackendServer.Controllers
 {
     public class FunctionsController : BaseController
     {
         private readonly ApplicationDbContext _context;
-        public FunctionsController(ApplicationDbContext context)
+        private readonly ILogger<FunctionsController> _logger;
+        public FunctionsController(ApplicationDbContext context, ILogger<FunctionsController> logger)
         {
             _context = context;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         [HttpPost]
         [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.CREATE)]
         [ApiValidationFilterAttribute]
         public async Task<IActionResult> PostFunction([FromBody]FunctionCreateRequest request)
         {
+            _logger.LogInformation("Begin PostFunction API");
             var dbFunction = await _context.Functions.FindAsync(request.Id);
             if (dbFunction == null)
                 return BadRequest(new ApiBadRequestResponse($"Function with Id {request.Id} is existed"));
@@ -43,10 +47,12 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {
+                _logger.LogInformation("End PostFunction API - Success");
                 return CreatedAtAction(nameof(GetById), new { id = function.Id }, request);
             }
             else
             {
+                _logger.LogInformation("End PostFunction API - Failed");
                 return BadRequest(new ApiBadRequestResponse("Create function is failed"));
             }
         }
