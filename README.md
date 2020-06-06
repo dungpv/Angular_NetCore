@@ -36,3 +36,7 @@ For each KB, user can vote it and comment to below KB.
 
 # Link Notes
 https://medium.com/eway/nguy%C3%AAn-t%E1%BA%AFc-thi%E1%BA%BFt-k%E1%BA%BF-rest-api-23add16968d7
+
+#Angular Statement
+- Gen Module: ng g m protected-zone/systems
+- Gen Component: ng g c protected-zone/systems/functions
