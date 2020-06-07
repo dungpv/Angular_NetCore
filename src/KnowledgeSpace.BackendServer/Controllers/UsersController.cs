@@ -212,7 +212,8 @@ namespace KnowledgeSpace.BackendServer.Controllers
                             Name = f.Name,
                             Url = f.Url,
                             ParentId = f.ParentId,
-                            SortOrder = f.SortOrder
+                            SortOrder = f.SortOrder,
+                            Icon = f.Icon,
                         };
             var data = await query.Distinct()
                 .OrderBy(x => x.ParentId)
