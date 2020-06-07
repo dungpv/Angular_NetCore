@@ -13,6 +13,12 @@ namespace KnowledgeSpace.BackendServer.Authorization
     {
         private readonly FunctionCode _functionCode;
         private readonly CommandCode _commandCode;
+        public ClaimRequirementFilter(FunctionCode functionCode, CommandCode commandCode)
+        {
+            _functionCode = functionCode;
+            _commandCode = commandCode;
+        }
+
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var permissionsClaim = context.HttpContext.User.Claims

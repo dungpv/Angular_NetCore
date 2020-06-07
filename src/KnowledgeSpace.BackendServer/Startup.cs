@@ -26,6 +26,7 @@ namespace KnowledgeSpace.BackendServer
 {
     public class Startup
     {
+        private readonly string KspSpecificOrigins = "KspSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -52,12 +53,22 @@ namespace KnowledgeSpace.BackendServer
                 options.Events.RaiseSuccessEvents = true;
             })
              .AddInMemoryApiResources(Config.Apis)
-             .AddInMemoryClients(Config.Clients)
+             .AddInMemoryClients(Configuration.GetSection("IdentityServer:Clients"))
              .AddInMemoryIdentityResources(Config.Ids)
              .AddAspNetIdentity<User>()
              .AddProfileService<IdentityProfileService>()
              .AddDeveloperSigningCredential();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(KspSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins(Configuration["AllowOrigins"])
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
             services.Configure<IdentityOptions>(options =>
             {
                 // Default Lockout settings.
@@ -153,7 +164,7 @@ namespace KnowledgeSpace.BackendServer
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseCors(KspSpecificOrigins);
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
