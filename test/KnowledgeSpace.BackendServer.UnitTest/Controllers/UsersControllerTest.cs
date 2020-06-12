@@ -208,6 +208,13 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
                    UserName = "test1"
                });
 
+            _mockUserManager.Setup(x => x.GetUsersInRoleAsync(It.IsAny<string>()))
+             .ReturnsAsync(new List<User>(){
+                new User()
+                {
+                    UserName = "test1"
+                }});
+
             _mockUserManager.Setup(x => x.DeleteAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Success);
             var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _context);
@@ -223,7 +230,12 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
              {
                  UserName = "test1"
              });
-
+            _mockUserManager.Setup(x => x.GetUsersInRoleAsync(It.IsAny<string>()))
+            .ReturnsAsync(new List<User>(){
+                new User()
+                {
+                    UserName = "test1"
+                }});
             _mockUserManager.Setup(x => x.DeleteAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError[] { }));
 
