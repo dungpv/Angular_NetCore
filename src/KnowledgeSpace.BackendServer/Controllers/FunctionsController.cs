@@ -96,6 +96,24 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             return Ok(functionvms);
         }
+        [HttpGet("{functionId}/parents")]
+        [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.VIEW)]
+        public async Task<IActionResult> GetFunctionsByParentId(string functionId)
+        {
+            var functions = _context.Functions.Where(x => x.ParentId == functionId);
+
+            var functionvms = await functions.Select(u => new FunctionVm()
+            {
+                Id = u.Id,
+                Name = u.Name,
+                Url = u.Url,
+                SortOrder = u.SortOrder,
+                ParentId = u.ParentId,
+                Icon = u.Icon
+            }).ToListAsync();
+
+            return Ok(functionvms);
+        }
         // URL: GET: http://localhost:5001/api/Functions/?quer
         [HttpGet("filter")]
         [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.VIEW)]
@@ -163,6 +181,10 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 return NotFound(new ApiNotFoundResponse($"Cannot found function with id {id}"));
 
             _context.Functions.Remove(function);
+
+            var commands = _context.CommandInFunctions.Where(x => x.FunctionId == id);
+            _context.CommandInFunctions.RemoveRange(commands);
+
             var result = await _context.SaveChangesAsync();
 
             if (result > 0)
@@ -209,51 +231,76 @@ namespace KnowledgeSpace.BackendServer.Controllers
             return Ok(data);
         }
         [HttpPost("{functionId}/commands")]
-        [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.UPDATE)]
-        public async Task<IActionResult> PostCommandToFunction(string functionId, [FromBody] AddCommandToFunctionRequest request)
+        [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.CREATE)]
+        [ApiValidationFilter]
+        public async Task<IActionResult> PostCommandToFunction(string functionId, [FromBody] CommandAssignRequest request)
         {
-            var commandInFunction = await _context.CommandInFunctions.FindAsync(request.CommandId, request.FunctionId);
-            if (commandInFunction != null)
-                return BadRequest(new ApiBadRequestResponse($"This command has been added to function"));
-
-            var entity = new CommandInFunction()
+            foreach (var commandId in request.CommandIds)
             {
-                CommandId = request.CommandId,
-                FunctionId = request.FunctionId,
-            };
-            _context.CommandInFunctions.Add(entity);
+                if (await _context.CommandInFunctions.FindAsync(commandId, functionId) != null)
+                    return BadRequest(new ApiBadRequestResponse("This command has been existed in function"));
+
+                var entity = new CommandInFunction()
+                {
+                    CommandId = commandId,
+                    FunctionId = functionId
+                };
+
+                _context.CommandInFunctions.Add(entity);
+            }
+
+            if (request.AddToAllFunctions)
+            {
+                var otherFunctions = _context.Functions.Where(x => x.Id != functionId);
+                foreach (var function in otherFunctions)
+                {
+                    foreach (var commandId in request.CommandIds)
+                    {
+                        if (await _context.CommandInFunctions.FindAsync(request.CommandIds, function.Id) == null)
+                        {
+                            _context.CommandInFunctions.Add(new CommandInFunction()
+                            {
+                                CommandId = commandId,
+                                FunctionId = function.Id
+                            });
+                        }
+                    }
+                }
+            }
             var result = await _context.SaveChangesAsync();
+
             if (result > 0)
             {
-                return CreatedAtAction(nameof(GetById), new { commandId = entity.CommandId, functionId = entity.FunctionId }, request);
+                return CreatedAtAction(nameof(GetById), new { request.CommandIds, functionId });
             }
             else
             {
-                return BadRequest(new ApiBadRequestResponse("Post command to function is failed"));
+                return BadRequest(new ApiBadRequestResponse("Add command to function failed"));
             }
         }
-        [HttpDelete("{functionId}/commands/{commandId}")]
-        [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.DELETE)]
-        public async Task<IActionResult> DeleteCommandToFunction(string functionId, string commandId)
-        {
-            var commandInFunction = await _context.CommandInFunctions.FindAsync(functionId, commandId);
-            if (commandInFunction == null)
-                return BadRequest(new ApiBadRequestResponse($"This command is not existed in function"));
 
-            var entity = new CommandInFunction()
+        [HttpDelete("{functionId}/commands")]
+        [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.UPDATE)]
+        public async Task<IActionResult> DeleteCommandToFunction(string functionId, [FromQuery] CommandAssignRequest request)
+        {
+            foreach (var commandId in request.CommandIds)
             {
-                CommandId = commandId,
-                FunctionId = functionId,
-            };
-            _context.CommandInFunctions.Remove(entity);
+                var entity = await _context.CommandInFunctions.FindAsync(commandId, functionId);
+                if (entity == null)
+                    return BadRequest(new ApiBadRequestResponse("This command is not existed in function"));
+
+                _context.CommandInFunctions.Remove(entity);
+            }
+
             var result = await _context.SaveChangesAsync();
+
             if (result > 0)
             {
                 return Ok();
             }
             else
             {
-                return BadRequest(new ApiBadRequestResponse("Delete command in function is failed"));
+                return BadRequest(new ApiBadRequestResponse("Delete command to function failed"));
             }
         }
 

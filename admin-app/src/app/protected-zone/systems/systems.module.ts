@@ -14,6 +14,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
+import { DropdownModule } from 'primeng/dropdown';
+import { TreeTableModule } from 'primeng/treetable';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RolesDetailComponent } from './roles/roles-detail/roles-detail.component';
 import { NotificationService } from '@app/shared/services';
@@ -22,6 +24,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ValidationMessageModule } from '@app/shared/modules/validation-message/validation-message.module';
 import { UsersDetailComponent } from './users/users-detail/users-detail.component';
 import { RolesAssignComponent } from './users/roles-assign/roles-assign.component';
+import { FunctionsDetailComponent } from './functions/functions-detail/functions-detail.component';
+import { CommandsAssignComponent } from './functions/commands-assign/commands-assign.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +35,9 @@ import { RolesAssignComponent } from './users/roles-assign/roles-assign.componen
     PermissionsComponent,
     RolesDetailComponent,
     UsersDetailComponent,
-    RolesAssignComponent],
+    RolesAssignComponent,
+    FunctionsDetailComponent,
+    CommandsAssignComponent],
   imports: [
     CommonModule,
     SystemsRoutingModule,
@@ -43,6 +49,9 @@ import { RolesAssignComponent } from './users/roles-assign/roles-assign.componen
     InputTextModule,
     KeyFilterModule,
     CalendarModule,
+    CheckboxModule,
+    TreeTableModule,
+    DropdownModule,
     CheckboxModule,
     ProgressSpinnerModule,
     FormsModule,
