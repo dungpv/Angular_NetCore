@@ -108,6 +108,8 @@ namespace KnowledgeSpace.BackendServer
             services.AddTransient<DbInitializer>();
             services.AddTransient<IEmailSender, EmailSenderService>();
             services.AddTransient<ISequenceService, SequenceService>();
+            services.AddTransient<IStorageService, FileStorageService>();
+
             services.AddRazorPages(options =>
             {
                 options.Conventions.AddAreaFolderRouteModelConvention("Identity", "/Account/", model =>

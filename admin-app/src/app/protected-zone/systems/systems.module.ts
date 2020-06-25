@@ -26,6 +26,7 @@ import { UsersDetailComponent } from './users/users-detail/users-detail.componen
 import { RolesAssignComponent } from './users/roles-assign/roles-assign.component';
 import { FunctionsDetailComponent } from './functions/functions-detail/functions-detail.component';
 import { CommandsAssignComponent } from './functions/commands-assign/commands-assign.component';
+import { SharedDirectivesModule } from '@app/shared/directives/shared-directives.module';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { CommandsAssignComponent } from './functions/commands-assign/commands-as
     ProgressSpinnerModule,
     FormsModule,
     ReactiveFormsModule,
+    SharedDirectivesModule,
     ValidationMessageModule,
     ModalModule.forRoot()
   ],
