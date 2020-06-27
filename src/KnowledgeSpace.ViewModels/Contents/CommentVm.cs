@@ -10,6 +10,7 @@ namespace KnowledgeSpace.ViewModels.Contents
         public string Content { get; set; }
         public int KnowledgeBaseId { get; set; }
         public string OwnerUserId { get; set; }
+        public string OwnerName { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }

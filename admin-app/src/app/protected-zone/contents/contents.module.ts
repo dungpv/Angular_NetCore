@@ -30,6 +30,8 @@ import { KnowledgeBasesComponent } from './knowledge-bases/knowledge-bases.compo
 import { ContentsRoutingModule } from './contents-routing.module';
 import { KnowledgeBasesDetailComponent } from './knowledge-bases/knowledge-bases-detail/knowledge-bases-detail.component';
 import { CategoriesDetailComponent } from './categories/categories-detail/categories-detail.component';
+import { CommentsComponent } from './knowledge-bases/comments/comments.component';
+import { CommentsDetailComponent } from './knowledge-bases/comments-detail/comments-detail.component';
 
 
 @NgModule({
@@ -38,6 +40,8 @@ import { CategoriesDetailComponent } from './categories/categories-detail/catego
     KnowledgeBasesComponent,
     KnowledgeBasesDetailComponent,
     CategoriesDetailComponent,
+    CommentsComponent,
+    CommentsDetailComponent,
   ],
   imports: [
     CommonModule,

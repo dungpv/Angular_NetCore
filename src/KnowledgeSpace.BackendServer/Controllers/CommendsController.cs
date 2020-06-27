@@ -6,6 +6,8 @@ using KnowledgeSpace.BackendServer.Authorization;
 using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
+using KnowledgeSpace.BackendServer.Extensions;
+using KnowledgeSpace.BackendServer.Helper;
 using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;
 using Microsoft.AspNetCore.Http;
@@ -19,24 +21,33 @@ namespace KnowledgeSpace.BackendServer.Controllers
         #region Comment
         [HttpGet("{knowledgeBaseId}/comments/filter")]
         [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.VIEW)]
-        public async Task<IActionResult> GetCommentPaging(int knowledgeBaseId, string filter, int pageIndex, int pageSize)
+        public async Task<IActionResult> GetCommentPaging(int? knowledgeBaseId, string filter, int pageIndex, int pageSize)
         {
-            var query = _context.Comments.Where(x => x.KnowledgeBaseId == knowledgeBaseId).AsQueryable();
+            var query = from c in _context.Comments
+                        join u in _context.Users
+                            on c.OwnerUserId equals u.Id
+                        select new { c, u };
+            if (knowledgeBaseId.HasValue)
+            {
+                query = query.Where(x => x.c.KnowledgeBaseId == knowledgeBaseId.Value);
+            }
             if (!string.IsNullOrEmpty(filter))
             {
-                query = query.Where(x => x.Content.Contains(filter));
+                query = query.Where(x => x.c.Content.Contains(filter));
             }
             var totalRecords = await query.CountAsync();
-            var items = await query.Skip((pageIndex - 1) * pageSize)
+            var items = await query.OrderByDescending(x => x.c.CreateDate)
+                .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Select(c => new CommentVm()
                 {
-                    Id = c.Id,
-                    Content = c.Content,
-                    CreateDate = c.CreateDate,
-                    KnowledgeBaseId = c.KnowledgeBaseId,
-                    LastModifiedDate = c.LastModifiedDate,
-                    OwnerUserId = c.OwnwerUserId,
+                    Id = c.c.Id,
+                    Content = c.c.Content,
+                    CreateDate = c.c.CreateDate,
+                    KnowledgeBaseId = c.c.KnowledgeBaseId,
+                    LastModifiedDate = c.c.LastModifiedDate,
+                    OwnerUserId = c.c.OwnerUserId,
+                    OwnerName = c.u.FirstName + " " + c.u.LastName
                 })
                 .ToListAsync();
 
@@ -53,8 +64,8 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var comment = await _context.Comments.FindAsync(commentId);
             if (comment == null)
-                return NotFound();
-
+                return NotFound(new ApiNotFoundResponse($"Cannot found comment with id: {commentId}"));
+            var user = await _context.Users.FindAsync(comment.OwnerUserId);
             var commentVm = new CommentVm()
             {
                 Id = comment.Id,
@@ -62,41 +73,22 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 CreateDate = comment.CreateDate,
                 KnowledgeBaseId = comment.KnowledgeBaseId,
                 LastModifiedDate = comment.LastModifiedDate,
-                OwnerUserId = comment.OwnwerUserId,
+                OwnerUserId = comment.OwnerUserId,
+                OwnerName = user.FirstName + " " + user.LastName
             };
             return Ok(commentVm);
         }
 
-        [HttpPost("{knowledgeBaseId}/comments/{commentId}")]
-        [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.VIEW)]
-        public async Task<IActionResult> GetCommentDetail(int knowledgeBaseId, [FromBody]CommentCreateRequest request)
-        {
-            var comment = new Comment()
-            {
-                Content = request.Content,
-                KnowledgeBaseId = request.KnowledgeBaseId,
-                OwnwerUserId = string.Empty,
-            };
-            _context.Comments.Add(comment);
-            var result = await _context.SaveChangesAsync();
-            if (result > 0)
-            {
-                return CreatedAtAction(nameof(GetCommentDetail), new { id = knowledgeBaseId, commentId = comment.Id }, request);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
         [HttpPost("{knowledgeBaseId}/comments")]
         [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.CREATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PostComment(int knowledgeBaseId, [FromBody]CommentCreateRequest request)
         {
             var comment = new Comment()
             {
                 Content = request.Content,
                 KnowledgeBaseId = knowledgeBaseId,
-                OwnwerUserId = string.Empty,
+                OwnerUserId = string.Empty,
             };
             _context.Comments.Add(comment);
 
@@ -122,12 +114,13 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         [HttpPut("{knowledgeBaseId}/comments/{commentId}")]
         [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.UPDATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PutComment(int commentId, [FromBody]CommentCreateRequest request)
         {
             var comment = await _context.Comments.FindAsync(commentId);
             if (comment == null)
-                return NotFound();
-            if (comment.OwnwerUserId != User.Identity.Name)
+                return BadRequest(new ApiBadRequestResponse($"Cannot found comment with id: {commentId}"));
+            if (comment.OwnerUserId != User.GetUserId())
                 return Forbid();
 
             comment.Content = request.Content;
@@ -139,7 +132,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 return NoContent();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse($"Update comment failed"));
         }
 
         [HttpDelete("{knowledgeBaseId}/comments/{commentId}")]
@@ -167,7 +160,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                     CreateDate = comment.CreateDate,
                     KnowledgeBaseId = comment.KnowledgeBaseId,
                     LastModifiedDate = comment.LastModifiedDate,
-                    OwnerUserId = comment.OwnwerUserId
+                    OwnerUserId = comment.OwnerUserId
                 };
                 return Ok(commentVm);
             }
