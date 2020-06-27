@@ -6,8 +6,10 @@ using KnowledgeSpace.BackendServer.Authorization;
 using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
+using KnowledgeSpace.BackendServer.Helper;
 using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,14 +48,15 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: GET: http://localhost:5001/api/Category/{id}
         [HttpGet("{id}")]
-        [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.VIEW)]
-        public async Task<IActionResult> GetById(string id)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(int id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"Category with id: {id} is not found"));
 
-            var categoryVm = CreateCategoryVm(category);
+            CategoryVm categoryVm = CreateCategoryVm(category);
+
             return Ok(categoryVm);
         }
         // URL: GET

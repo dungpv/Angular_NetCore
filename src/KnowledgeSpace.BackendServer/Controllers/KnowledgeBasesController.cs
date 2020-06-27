@@ -9,10 +9,12 @@ using KnowledgeSpace.BackendServer.Authorization;
 using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
+using KnowledgeSpace.BackendServer.Extensions;
 using KnowledgeSpace.BackendServer.Helper;
 using KnowledgeSpace.BackendServer.Services;
 using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,10 +25,10 @@ namespace KnowledgeSpace.BackendServer.Controllers
     public partial class KnowledgeBasesController : BaseController
     {
         private readonly ApplicationDbContext _context;
-        private readonly SequenceService _sequenceService;
+        private readonly ISequenceService _sequenceService;
         private readonly IStorageService _storageService;
         private readonly ILogger<KnowledgeBasesController> _logger;
-        public KnowledgeBasesController(ApplicationDbContext context, SequenceService sequenceService, IStorageService storageService
+        public KnowledgeBasesController(ApplicationDbContext context, ISequenceService sequenceService, IStorageService storageService
             ,ILogger<KnowledgeBasesController> logger)
         {
             _context = context;
@@ -37,12 +39,20 @@ namespace KnowledgeSpace.BackendServer.Controllers
         #region Knowledge base
         [HttpPost]
         [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.CREATE)]
-        public async Task<IActionResult> PostKnowledgeBase([FromBody]KnowledgeBaseCreateRequest request)
+        [ApiValidationFilter]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PostKnowledgeBase([FromForm]KnowledgeBaseCreateRequest request)
         {
             _logger.LogInformation("Begin PostKnowledgeBase API");
-            var knowledgeBase = CreateKnowledgeBaseEntity(request);
+            KnowledgeBase knowledgeBase = CreateKnowledgeBaseEntity(request);
+            knowledgeBase.OwnerUserId = User.GetUserId();
+            if (string.IsNullOrEmpty(knowledgeBase.SeoAlias))
+            {
+                knowledgeBase.SeoAlias = TextHelper.ToUnsignString(knowledgeBase.Title);
+            }
             knowledgeBase.Id = await _sequenceService.GetKnowledgeBaseNewId();
-            //process attachment
+
+            //Process attachment
             if (request.Attachments != null && request.Attachments.Count > 0)
             {
                 foreach (var attachment in request.Attachments)
@@ -53,22 +63,28 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
             _context.KnowledgeBases.Add(knowledgeBase);
 
-            //process labels
-            if(!string.IsNullOrEmpty(request.Labels))
+            //Process label
+            if (request.Labels?.Length > 0)
             {
                 await ProcessLabel(request, knowledgeBase);
             }
-  
+
             var result = await _context.SaveChangesAsync();
+
             if (result > 0)
             {
                 _logger.LogInformation("End PostKnowledgeBase API - Success");
-                return CreatedAtAction(nameof(GetById), new { id = knowledgeBase.Id }, request);
+
+                return CreatedAtAction(nameof(GetById), new
+                {
+                    id = knowledgeBase.Id
+                });
             }
             else
             {
                 _logger.LogInformation("End PostKnowledgeBase API - Failed");
-                return BadRequest();
+
+                return BadRequest(new ApiBadRequestResponse("Create knowledge failed"));
             }
         }
 
@@ -91,7 +107,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: GET: http://localhost:5001/api/KnowledgeBases/?quer
         [HttpGet("filter")]
-        [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.VIEW)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetKnowledgeBasesPaging(string filter, int pageIndex, int pageSize)
         {
             var query = _context.KnowledgeBases.AsQueryable();
@@ -105,6 +121,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 .Select(u => new KnowledgeBaseQuickVm()
                 {
                     Id = u.Id,
+                    Title = u.Title,
                     CategoryId = u.CategoryId,
                     CategoryName = u.Title,
                     SeoAlias = u.SeoAlias,
@@ -121,7 +138,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
 
         [HttpGet("{id}")]
-        [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.VIEW)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(id);
@@ -134,36 +151,37 @@ namespace KnowledgeSpace.BackendServer.Controllers
         // URL: PUT: http://localhost:5001/api/KnowledgeBases/{id}
         [HttpPut("{id}")]
         [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.UPDATE)]
-        public async Task<IActionResult> PutKnowledgeBase(int id, [FromBody]KnowledgeBaseCreateRequest request)
+        [ApiValidationFilter]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PutKnowledgeBase(int id, [FromForm]KnowledgeBaseCreateRequest request)
         {
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(id);
             if (knowledgeBase == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse($"Cannot found knowledge base with id {id}"));
+            UpdateKnowledgeBase(request, knowledgeBase);
 
-            knowledgeBase.CategoryId = request.CategoryId;
-            knowledgeBase.Title = request.Title;
-            knowledgeBase.SeoAlias = request.SeoAlias;
-            knowledgeBase.Description = request.Description;
-            knowledgeBase.Environment = request.Environment;
-            knowledgeBase.Problem = request.Problem;
-            knowledgeBase.StepToReproduce = request.StepToReproduce;
-            knowledgeBase.ErrorMessage = request.ErrorMessage;
-            knowledgeBase.Workaround = request.Workaround;
-            knowledgeBase.Note = request.Note;
-            knowledgeBase.Labels = request.Labels;
-
+            //Process attachment
+            if (request.Attachments != null && request.Attachments.Count > 0)
+            {
+                foreach (var attachment in request.Attachments)
+                {
+                    var attachmentEntity = await SaveFile(knowledgeBase.Id, attachment);
+                    _context.Attachments.Add(attachmentEntity);
+                }
+            }
             _context.KnowledgeBases.Update(knowledgeBase);
-            //process labels
-            if (!string.IsNullOrEmpty(request.Labels))
+
+            if (request.Labels?.Length > 0)
             {
                 await ProcessLabel(request, knowledgeBase);
             }
             var result = await _context.SaveChangesAsync();
+
             if (result > 0)
             {
                 return NoContent();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse($"Update knowledge base failed"));
         }
 
         // URL: DELETE: http://localhost:5001/api/KnowledgeBases/{id}
@@ -206,7 +224,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Workaround = knowledgeBase.Workaround,
                 Note = knowledgeBase.Note,
                 OwnerUserId = knowledgeBase.OwnerUserId,
-                Labels = knowledgeBase.Labels,
+                Labels = !string.IsNullOrEmpty(knowledgeBase.Labels) ? knowledgeBase.Labels.Split(',') : null,
                 CreateDate = knowledgeBase.CreateDate,
                 LastModifiedDate = knowledgeBase.LastModifiedDate,
                 NumberOfComments = knowledgeBase.NumberOfComments,
