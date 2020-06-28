@@ -32,6 +32,8 @@ import { KnowledgeBasesDetailComponent } from './knowledge-bases/knowledge-bases
 import { CategoriesDetailComponent } from './categories/categories-detail/categories-detail.component';
 import { CommentsComponent } from './knowledge-bases/comments/comments.component';
 import { CommentsDetailComponent } from './knowledge-bases/comments-detail/comments-detail.component';
+import { ReportsComponent } from './knowledge-bases/reports/reports.component';
+import { ReportsDetailComponent } from './knowledge-bases/reports-detail/reports-detail.component';
 
 
 @NgModule({
@@ -42,6 +44,8 @@ import { CommentsDetailComponent } from './knowledge-bases/comments-detail/comme
     CategoriesDetailComponent,
     CommentsComponent,
     CommentsDetailComponent,
+    ReportsComponent,
+    ReportsDetailComponent,
   ],
   imports: [
     CommonModule,

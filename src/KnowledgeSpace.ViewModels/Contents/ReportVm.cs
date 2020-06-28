@@ -11,6 +11,7 @@ namespace KnowledgeSpace.ViewModels.Contents
         public int? CommentId { get; set; }
         public string Content { get; set; }
         public string ReportUserId { get; set; }
+        public string ReportUserName { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
         public bool IsProcessed { get; set; }

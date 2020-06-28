@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KnowledgeSpace.BackendServer.Authorization;
+using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;
@@ -15,26 +17,33 @@ namespace KnowledgeSpace.BackendServer.Controllers
     {
         #region Reports
         [HttpGet("{knowledgeBaseId}/reports/filter")]
-        public async Task<IActionResult> GetReportPaging(int knowledgeBaseId, string filter, int pageIndex, int pageSize)
+        public async Task<IActionResult> GetReportPaging(int? knowledgeBaseId, string filter, int pageIndex, int pageSize)
         {
-            var query = _context.Reports.Where(x => x.KnowledgeBaseId == knowledgeBaseId).AsQueryable();
+            var query = from r in _context.Reports
+                        join u in _context.Users
+                            on r.ReportUserId equals u.Id
+                        select new { r, u };
+            if (knowledgeBaseId.HasValue)
+            {
+                query = query.Where(x => x.r.KnowledgeBaseId == knowledgeBaseId.Value);
+            }
             if (!string.IsNullOrEmpty(filter))
             {
-                query = query.Where(x => x.Content.Contains(filter));
+                query = query.Where(x => x.r.Content.Contains(filter));
             }
             var totalRecords = await query.CountAsync();
             var items = await query.Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Select(c => new ReportVm()
                 {
-                    Id = c.Id,
-                    Content = c.Content,
-                    CreateDate = c.CreateDate,
-                    KnowledgeBaseId = c.KnowledgeBaseId,
-                    LastModifiedDate = c.LastModifiedDate,
+                    Id = c.r.Id,
+                    Content = c.r.Content,
+                    CreateDate = c.r.CreateDate,
+                    KnowledgeBaseId = c.r.KnowledgeBaseId,
+                    LastModifiedDate = c.r.LastModifiedDate,
                     IsProcessed = false,
-                    ReportUserId = c.ReportUserId,
-
+                    ReportUserId = c.r.ReportUserId,
+                    ReportUserName = c.u.FirstName + " " + c.u.LastName
                 }).ToListAsync();
 
             var pagination = new Pagination<ReportVm>

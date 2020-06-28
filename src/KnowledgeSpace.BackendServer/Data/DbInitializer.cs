@@ -77,8 +77,8 @@ namespace KnowledgeSpace.BackendServer.Data
 
                     new Function {Id = "CONTENT_CATEGORY",Name = "Danh mục",ParentId ="CONTENT",Url = "/contents/categories" , Icon="fa-edit" },
                     new Function {Id = "CONTENT_KNOWLEDGEBASE",Name = "Bài viết",ParentId = "CONTENT",SortOrder = 2,Url = "/contents/knowledge-bases", Icon="fa-edit"  },
-                    new Function {Id = "CONTENT_COMMENT",Name = "Trang",ParentId = "CONTENT",SortOrder = 3,Url = "/contents/comments", Icon="fa-edit"  },
-                    new Function {Id = "CONTENT_REPORT",Name = "Báo xấu",ParentId = "CONTENT",SortOrder = 3,Url = "/contents/reports", Icon="fa-edit"  },
+                    new Function {Id = "CONTENT_COMMENT",Name = "Trang",ParentId = "CONTENT",SortOrder = 3,Url = "/contents/knowledge-bases/comments", Icon="fa-edit"  },
+                    new Function {Id = "CONTENT_REPORT",Name = "Báo xấu",ParentId = "CONTENT",SortOrder = 3,Url = "/contents/knowledge-bases/reports", Icon="fa-edit"  },
 
                     new Function {Id = "STATISTIC",Name = "Thống kê", ParentId = null, Url = "/statistics", Icon="fa-bar-chart-o" },
 
