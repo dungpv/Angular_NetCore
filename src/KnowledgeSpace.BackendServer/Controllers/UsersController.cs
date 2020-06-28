@@ -42,6 +42,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 LastName = request.LastName,
                 FirstName = request.FirstName,
                 PhoneNumber = request.PhoneNumber,
+                CreateDate = DateTime.Now,
             };
             var result = await _userManager.CreateAsync(User, request.Password);
             if (result.Succeeded)
@@ -71,6 +72,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 PhoneNumber = user.PhoneNumber,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                CreateDate = user.CreateDate,
             };
             return Ok(userVm);
         }
@@ -90,6 +92,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 PhoneNumber = u.PhoneNumber,
                 FirstName = u.FirstName,
                 LastName = u.LastName,
+                CreateDate = u.CreateDate,
             }).ToListAsync();
 
             return Ok(uservms);
@@ -118,6 +121,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                     PhoneNumber = u.PhoneNumber,
                     FirstName = u.FirstName,
                     LastName = u.LastName,
+                    CreateDate = u.CreateDate,
                 })
                 .ToListAsync();
 
@@ -140,6 +144,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.Dob = DateTime.Parse(request.Dob);
+            user.LastModifiedDate = DateTime.Now;
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -193,7 +198,8 @@ namespace KnowledgeSpace.BackendServer.Controllers
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     FirstName = user.FirstName,
-                    LastName = user.LastName
+                    LastName = user.LastName,
+                    CreateDate = user.CreateDate,
                 };
                 return Ok(uservm);
             }
