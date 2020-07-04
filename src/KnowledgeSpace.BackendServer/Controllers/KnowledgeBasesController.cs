@@ -105,6 +105,46 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             return Ok(knowledgeBasevms);
         }
+
+        [HttpGet("latest/{take:int}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetLatestKnowledgeBases(int take)
+        {
+            var knowledgeBases = _context.KnowledgeBases
+                .OrderByDescending(x => x.CreateDate)
+                .Take(take);
+
+            var knowledgeBasevms = await knowledgeBases.Select(u => new KnowledgeBaseQuickVm()
+            {
+                Id = u.Id,
+                CategoryId = u.CategoryId,
+                CategoryName = u.Title,
+                SeoAlias = u.SeoAlias,
+                Description = u.Description,
+            }).ToListAsync();
+
+            return Ok(knowledgeBasevms);
+        }
+        [HttpGet("popular/{take:int}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPopularKnowledgeBases(int take)
+        {
+            var knowledgeBases = _context.KnowledgeBases
+                .OrderByDescending(x => x.ViewCount)
+                .Take(take);
+
+            var knowledgeBasevms = await knowledgeBases.Select(u => new KnowledgeBaseQuickVm()
+            {
+                Id = u.Id,
+                CategoryId = u.CategoryId,
+                CategoryName = u.Title,
+                SeoAlias = u.SeoAlias,
+                Description = u.Description,
+                ViewCount = u.ViewCount
+            }).ToListAsync();
+
+            return Ok(knowledgeBasevms);
+        }
         // URL: GET: http://localhost:5001/api/KnowledgeBases/?quer
         [HttpGet("filter")]
         [AllowAnonymous]

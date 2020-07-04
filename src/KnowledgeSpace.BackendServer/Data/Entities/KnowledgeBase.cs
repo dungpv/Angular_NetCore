@@ -60,5 +60,6 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
         public int? NumberOfVotes { get; set; }
 
         public int? NumberOfReports { get; set; }
+        public int? ViewCount { get; set; }
     }
 }
