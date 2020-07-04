@@ -1,4 +1,4 @@
-﻿
+﻿@model HomeViewModel
 @{
     ViewData["Title"] = "Trang chủ Knowledge Space";
     ViewData["Description"] = "Trang chủ của hệ thống lưu trữ kiến thức Knowledge Space";
@@ -14,7 +14,7 @@
                 <section class="span4 articles-list">
                     <h3>Bài bài viết xem nhiều</h3>
                     <ul class="articles">
-                        @*@foreach (var item in Model.PopularKnowledgeBases)
+                        @foreach (var item in Model.PopularKnowledgeBases)
                         {
                             var url = "/kb/" + item.SeoAlias + "-" + item.Id + "/";
                             <li class="article-entry standard">
@@ -25,14 +25,14 @@
                                 </span>
                                 <span class="like-count">@item.NumberOfVotes</span>
                             </li>
-                        }*@
+                        }
                     </ul>
                 </section>
 
                 <section class="span4 articles-list">
                     <h3>Bài đăng mới nhất</h3>
                     <ul class="articles">
-                        @*@foreach (var item in Model.LatestKnowledgeBases)
+                        @foreach (var item in Model.LatestKnowledgeBases)
                         {
                             var url = "/kb/" + item.SeoAlias + "-" + item.Id + "/";
                             <li class="article-entry standard">
@@ -44,7 +44,7 @@
                                 </span>
                                 <span class="like-count">@item.NumberOfVotes</span>
                             </li>
-                        }*@
+                        }
                     </ul>
                 </section>
             </div>
@@ -82,10 +82,10 @@
             <section class="widget">
                 <h3 class="title">Tags</h3>
                 <div class="tagcloud">
-                    @*@foreach (var item in Model.PopularLabels)
+                    @foreach (var item in Model.PopularLabels)
                     {
                         <a href="tag/@item.Id" class="btn btn-mini" title="@Html.Raw(item.Name)">@Html.Raw(item.Name)</a>
-                    }*@
+                    }
                 </div>
             </section>
         </aside>
