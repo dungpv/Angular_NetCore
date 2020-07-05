@@ -13,6 +13,7 @@ using KnowledgeSpace.BackendServer.Authorization;
 using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Helper;
 using Microsoft.Extensions.Logging;
+using KnowledgeSpace.ViewModels;
 
 namespace KnowledgeSpace.BackendServer.Controllers
 {

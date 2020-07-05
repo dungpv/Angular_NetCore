@@ -12,6 +12,7 @@ using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Extensions;
 using KnowledgeSpace.BackendServer.Helper;
 using KnowledgeSpace.BackendServer.Services;
+using KnowledgeSpace.ViewModels;
 using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;
 using Microsoft.AspNetCore.Authorization;
@@ -159,29 +160,41 @@ namespace KnowledgeSpace.BackendServer.Controllers
         // URL: GET: http://localhost:5001/api/KnowledgeBases/?quer
         [HttpGet("filter")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetKnowledgeBasesPaging(string filter, int pageIndex, int pageSize)
+        public async Task<IActionResult> GetKnowledgeBasesPaging(string filter, int? categoryId, int pageIndex, int pageSize)
         {
-            var query = _context.KnowledgeBases.AsQueryable();
+            var query = from k in _context.KnowledgeBases
+                        join c in _context.Categories on k.CategoryId equals c.Id
+                        select new { k, c };
             if (!string.IsNullOrEmpty(filter))
             {
-                query = query.Where(x => x.Title.Contains(filter));
+                query = query.Where(x => x.k.Title.Contains(filter));
+            }
+            if (categoryId.HasValue)
+            {
+                query = query.Where(x => x.k.CategoryId == categoryId.Value);
             }
             var totalRecords = await query.CountAsync();
             var items = await query.Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Select(u => new KnowledgeBaseQuickVm()
                 {
-                    Id = u.Id,
-                    Title = u.Title,
-                    CategoryId = u.CategoryId,
-                    CategoryName = u.Title,
-                    SeoAlias = u.SeoAlias,
-                    Description = u.Description,
+                    Id = u.k.Id,
+                    CategoryId = u.k.CategoryId,
+                    Description = u.k.Description,
+                    SeoAlias = u.k.SeoAlias,
+                    Title = u.k.Title,
+                    CategoryAlias = u.c.SeoAlias,
+                    CategoryName = u.c.Name,
+                    NumberOfVotes = u.k.NumberOfVotes,
+                    CreateDate = u.k.CreateDate,
+                    NumberOfComments = u.k.NumberOfComments
                 })
                 .ToListAsync();
 
             var pagination = new Pagination<KnowledgeBaseQuickVm>
             {
+                PageSize = pageSize,
+                PageIndex = pageIndex,
                 Items = items,
                 TotalRecords = totalRecords,
             };

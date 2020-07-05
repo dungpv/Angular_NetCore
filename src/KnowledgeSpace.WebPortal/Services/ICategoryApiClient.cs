@@ -9,5 +9,6 @@ namespace KnowledgeSpace.WebPortal.Services
     public interface ICategoryApiClient
     {
         Task<List<CategoryVm>> GetCategories(int take);
+        Task<CategoryVm> GetCategoryById(int id);
     }
 }
