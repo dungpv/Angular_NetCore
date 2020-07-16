@@ -268,7 +268,62 @@ namespace KnowledgeSpace.BackendServer.Controllers
             return BadRequest();
         }
 
+        [HttpGet("{knowlegeBaseId}/labels")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetLabelsByKnowledgeBaseId(int knowlegeBaseId)
+        {
+            var query = from lik in _context.LabelInKnowledgeBases
+                        join l in _context.Labels on lik.LabelId equals l.Id
+                        orderby l.Name ascending
+                        where lik.KnowledgeBaseId == knowlegeBaseId
+                        select new { l.Id, l.Name };
 
+            var labels = await query.Select(u => new LabelVm()
+            {
+                Id = u.Id,
+                Name = u.Name
+            }).ToListAsync();
+
+            return Ok(labels);
+        }
+        [HttpGet("tags/{labelId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetKnowledgeBasesByTagId(string labelId, int pageIndex, int pageSize)
+        {
+            var query = from k in _context.KnowledgeBases
+                        join lik in _context.LabelInKnowledgeBases on k.Id equals lik.KnowledgeBaseId
+                        join l in _context.Labels on lik.LabelId equals l.Id
+                        join c in _context.Categories on k.CategoryId equals c.Id
+                        where lik.LabelId == labelId
+                        select new { k, l, c };
+
+            var totalRecords = await query.CountAsync();
+            var items = await query.Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .Select(u => new KnowledgeBaseQuickVm()
+                {
+                    Id = u.k.Id,
+                    CategoryId = u.k.CategoryId,
+                    Description = u.k.Description,
+                    SeoAlias = u.k.SeoAlias,
+                    Title = u.k.Title,
+                    CategoryAlias = u.c.SeoAlias,
+                    CategoryName = u.c.Name,
+                    NumberOfVotes = u.k.NumberOfVotes,
+                    CreateDate = u.k.CreateDate,
+                    NumberOfComments = u.k.NumberOfComments
+                })
+                .ToListAsync();
+
+            var pagination = new Pagination<KnowledgeBaseQuickVm>
+            {
+                PageSize = pageSize,
+                PageIndex = pageIndex,
+                Items = items,
+                TotalRecords = totalRecords,
+            };
+            return Ok(pagination);
+        }
         #endregion
         #region Private methods
 

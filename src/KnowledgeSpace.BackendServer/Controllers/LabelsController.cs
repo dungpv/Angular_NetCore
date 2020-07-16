@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KnowledgeSpace.BackendServer.Data;
+using KnowledgeSpace.BackendServer.Helper;
 using KnowledgeSpace.ViewModels.Contents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +18,22 @@ namespace KnowledgeSpace.BackendServer.Controllers
         public LabelsController(ApplicationDbContext context)
         {
             _context = context;
+        }
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var label = await _context.Labels.FindAsync(id);
+            if (label == null)
+                return NotFound(new ApiNotFoundResponse($"Label with id: {id} is not found"));
+
+            var labelVm = new LabelVm()
+            {
+                Id = label.Id,
+                Name = label.Name
+            };
+
+            return Ok(labelVm);
         }
         [HttpGet("popular/{take:int}")]
         [AllowAnonymous]

@@ -1,9 +1,9 @@
-﻿@model ListByCategoryIdViewModel
+﻿@model SearchKnowledgeBaseViewModel
 @{
-    Layout = "_SubLayout";
-    string suffixPage = Model.Data.PageIndex > 1 ? " - Trang " + Model.Data.PageIndex : "";
-    ViewData["Title"] = Model.Category.Name + suffixPage;
-    ViewData["Description"] = "Các bài viết trong danh mục " + Model.Category.SeoDescription + suffixPage;
+    ViewData["Title"] = "Kết quả tìm kiếm cho từ khóa " + Model.Keyword;
+    Layout = "~/Views/Shared/_SubLayout.cshtml";
+    ViewData["Description"] = "Các bài viết được tìm bởi từ khóa " + Model.Keyword;
+
 }
 <!-- start of page content -->
 <div class="span8 main-listing">
