@@ -11,6 +11,7 @@ using KnowledgeSpace.BackendServer.Helper;
 using KnowledgeSpace.ViewModels;
 using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -166,6 +167,32 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 return Ok(commentVm);
             }
             return BadRequest();
+        }
+
+        [HttpGet("comments/recent/{take}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetRecentComments(int take)
+        {
+            var query = from c in _context.Comments
+                        join u in _context.Users
+                            on c.OwnerUserId equals u.Id
+                        join k in _context.KnowledgeBases
+                        on c.KnowledgeBaseId equals k.Id
+                        orderby c.CreateDate descending
+                        select new { c, u, k };
+
+            var comments = await query.Take(take).Select(x => new CommentVm()
+            {
+                Id = x.c.Id,
+                CreateDate = x.c.CreateDate,
+                KnowledgeBaseId = x.c.KnowledgeBaseId,
+                OwnerUserId = x.c.OwnerUserId,
+                KnowledgeBaseTitle = x.k.Title,
+                OwnerName = x.u.FirstName + " " + x.u.LastName,
+                KnowledgeBaseSeoAlias = x.k.SeoAlias
+            }).ToListAsync();
+
+            return Ok(comments);
         }
         #endregion
     }
