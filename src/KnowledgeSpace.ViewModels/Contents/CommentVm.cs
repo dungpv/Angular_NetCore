@@ -15,5 +15,7 @@ namespace KnowledgeSpace.ViewModels.Contents
         public string OwnerName { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
+        public int? ReplyId { get; set; }
+        public Pagination<CommentVm> Children { get; set; } = new Pagination<CommentVm>();
     }
 }

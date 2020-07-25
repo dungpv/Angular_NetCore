@@ -27,6 +27,11 @@ namespace KnowledgeSpace.WebPortal.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
+        public async Task<Pagination<CommentVm>> GetCommentsTree(int knowledgeBaseId, int pageIndex, int pageSize)
+        {
+            return await GetAsync<Pagination<CommentVm>>($"/api/knowledgeBases/{knowledgeBaseId}/comments/tree?pageIndex={pageIndex}&pageSize={pageSize}");
+        }
+
         public async Task<KnowledgeBaseVm> GetKnowledgeBaseDetail(int id)
         {
             return await GetAsync<KnowledgeBaseVm>($"/api/knowledgeBases/{id}");
@@ -63,6 +68,16 @@ namespace KnowledgeSpace.WebPortal.Services
         public async Task<List<CommentVm>> GetRecentComments(int take)
         {
             return await GetListAsync<CommentVm>($"/api/knowledgeBases/comments/recent/{take}");
+        }
+
+        public async Task<Pagination<CommentVm>> GetRepliedComments(int knowledgeBaseId, int rootCommentId, int pageIndex, int pageSize)
+        {
+            return await GetAsync<Pagination<CommentVm>>($"/api/knowledgeBases/{knowledgeBaseId}/comments/{rootCommentId}/replied?pageIndex={pageIndex}&pageSize={pageSize}");
+        }
+
+        public async Task<CommentVm> PostComment(CommentCreateRequest request)
+        {
+            return await PostAsync<CommentCreateRequest, CommentVm>($"/api/knowledgeBases/{request.KnowledgeBaseId}/comments", request);
         }
 
         public async Task<Pagination<KnowledgeBaseQuickVm>> SearchKnowledgeBase(string keyword, int pageIndex, int pageSize)

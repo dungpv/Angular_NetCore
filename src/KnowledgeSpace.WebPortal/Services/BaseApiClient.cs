@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace KnowledgeSpace.WebPortal.Services
@@ -60,6 +61,56 @@ namespace KnowledgeSpace.WebPortal.Services
             }
             var data = JsonConvert.DeserializeObject<T>(body);
             return data;
+        }
+
+        public async Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest requestContent, bool requiredLogin = true)
+        {
+            var client = _httpClientFactory.CreateClient("BackendApi");
+            client.BaseAddress = new Uri(_configuration["BackendApiUrl"]);
+            StringContent httpContent = null;
+            if (requestContent != null)
+            {
+                var json = JsonConvert.SerializeObject(requestContent);
+                httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+
+            if (requiredLogin)
+            {
+                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            var response = await client.PostAsync(url, httpContent);
+            var body = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(body);
+            }
+            return JsonConvert.DeserializeObject<TResponse>(body);
+        }
+
+        public async Task<bool> PutAsync<TRequest, TResponse>(string url, TRequest requestContent, bool requiredLogin = true)
+        {
+            var client = _httpClientFactory.CreateClient("BackendApi");
+            client.BaseAddress = new Uri(_configuration["BackendApiUrl"]);
+            HttpContent httpContent = null;
+            if (requestContent != null)
+            {
+                var json = JsonConvert.SerializeObject(requestContent);
+                httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+
+            if (requiredLogin)
+            {
+                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            var response = await client.PutAsync(url, httpContent);
+            var body = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception(body);
+            return true;
         }
     }
 }
