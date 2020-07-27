@@ -22,5 +22,6 @@ namespace KnowledgeSpace.WebPortal.Services
         Task<Pagination<CommentVm>> GetRepliedComments(int knowledgeBaseId, int rootCommentId, int pageIndex, int pageSize);
 
         Task<CommentVm> PostComment(CommentCreateRequest request);
+        Task<bool> PostKnowlegdeBase(KnowledgeBaseCreateRequest request);
     }
 }

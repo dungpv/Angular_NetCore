@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KnowledgeSpace.ViewModels.Contents;
+using KnowledgeSpace.WebPortal.Extensions;
 using KnowledgeSpace.WebPortal.Helpers;
 using KnowledgeSpace.WebPortal.Models;
 using KnowledgeSpace.WebPortal.Services;
@@ -17,12 +18,14 @@ namespace KnowledgeSpace.WebPortal.Controllers
         private readonly ICategoryApiClient _categoryApiClient;
         private readonly IConfiguration _configuration;
         private readonly ILabelApiClient _labelApiClient;
+        private readonly IUserApiClient _userApiClient;
         public KnowledgeBaseController(IKnowledgeBaseApiClient knowledgeBaseApiClient, ICategoryApiClient categoryApiClient,
-            ILabelApiClient labelApiClient, IConfiguration configuration)
+            ILabelApiClient labelApiClient, IUserApiClient userApiClient, IConfiguration configuration)
         {
             _knowledgeBaseApiClient = knowledgeBaseApiClient;
             _categoryApiClient = categoryApiClient;
             _labelApiClient = labelApiClient;
+            _userApiClient = userApiClient;
             _configuration = configuration;
         }
         public async Task<IActionResult> ListByCategoryId(int id, int page = 1)
@@ -72,6 +75,10 @@ namespace KnowledgeSpace.WebPortal.Controllers
                 Category = category,
                 Labels = labels,
             };
+            if (User.Identity.IsAuthenticated)
+            {
+                viewModel.CurrentUser = await _userApiClient.GetById(User.GetUserId());
+            }
 
             return View(viewModel);
         }
