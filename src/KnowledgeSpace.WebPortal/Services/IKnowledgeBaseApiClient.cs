@@ -25,5 +25,6 @@ namespace KnowledgeSpace.WebPortal.Services
         Task<bool> PutKnowlegdeBase(int id, KnowledgeBaseCreateRequest request);
         Task<bool> UpdateViewCount(int id);
         Task<int> PostVote(VoteCreateRequest request);
+        Task<ReportVm> PostReport(ReportCreateRequest request);
     }
 }

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using KnowledgeSpace.BackendServer.Authorization;
 using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data.Entities;
+using KnowledgeSpace.BackendServer.Extensions;
+using KnowledgeSpace.BackendServer.Helper;
 using KnowledgeSpace.ViewModels;
 using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;
@@ -18,7 +20,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
     {
         #region Reports
         [HttpGet("{knowledgeBaseId}/reports/filter")]
-        public async Task<IActionResult> GetReportPaging(int? knowledgeBaseId, string filter, int pageIndex, int pageSize)
+        public async Task<IActionResult> GetReportsPaging(int? knowledgeBaseId, string filter, int pageIndex, int pageSize)
         {
             var query = from r in _context.Reports
                         join u in _context.Users
@@ -28,6 +30,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 query = query.Where(x => x.r.KnowledgeBaseId == knowledgeBaseId.Value);
             }
+
             if (!string.IsNullOrEmpty(filter))
             {
                 query = query.Where(x => x.r.Content.Contains(filter));
@@ -45,7 +48,8 @@ namespace KnowledgeSpace.BackendServer.Controllers
                     IsProcessed = false,
                     ReportUserId = c.r.ReportUserId,
                     ReportUserName = c.u.FirstName + " " + c.u.LastName
-                }).ToListAsync();
+                })
+                .ToListAsync();
 
             var pagination = new Pagination<ReportVm>
             {
@@ -54,12 +58,14 @@ namespace KnowledgeSpace.BackendServer.Controllers
             };
             return Ok(pagination);
         }
+
         [HttpGet("{knowledgeBaseId}/reports/{reportId}")]
-        public async Task<IActionResult> GetReportDetail(int knowledgeBaseId, int reportId)
+        public async Task<IActionResult> GetReportDetail(int reportId)
         {
             var report = await _context.Reports.FindAsync(reportId);
             if (report == null)
                 return NotFound();
+            var user = await _context.Users.FindAsync(report.ReportUserId);
 
             var reportVm = new ReportVm()
             {
@@ -70,25 +76,28 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 LastModifiedDate = report.LastModifiedDate,
                 IsProcessed = report.IsProcessed,
                 ReportUserId = report.ReportUserId,
+                ReportUserName = user.FirstName + " " + user.LastName
             };
+
             return Ok(reportVm);
         }
 
         [HttpPost("{knowledgeBaseId}/reports")]
-        public async Task<IActionResult> PostReport(int knowledgeBaseId, [FromBody]ReportCreateRequest request)
+        [ApiValidationFilter]
+        public async Task<IActionResult> PostReport(int knowledgeBaseId, [FromBody] ReportCreateRequest request)
         {
             var report = new Report()
             {
                 Content = request.Content,
                 KnowledgeBaseId = knowledgeBaseId,
-                ReportUserId = request.ReportUserId,
-                IsProcessed = false,
+                ReportUserId = User.GetUserId(),
+                IsProcessed = false
             };
             _context.Reports.Add(report);
 
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(knowledgeBaseId);
             if (knowledgeBase == null)
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse($"Cannot found knowledge base with id {knowledgeBaseId}"));
 
             knowledgeBase.NumberOfReports = knowledgeBase.NumberOfReports.GetValueOrDefault(0) + 1;
             _context.KnowledgeBases.Update(knowledgeBase);
@@ -100,50 +109,32 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse($"Create report failed"));
             }
         }
-        [HttpPut("{knowledgeBaseId}/reports/{reportId}")]
-        public async Task<IActionResult> PutReport(int reportId, [FromBody]ReportCreateRequest request)
-        {
-            var report = await _context.Reports.FindAsync(reportId);
-            if (report == null)
-                return NotFound();
-            if (report.ReportUserId != User.Identity.Name)
-                return Forbid();
 
-            report.Content = request.Content;
-            _context.Reports.Update(report);
-
-            var result = await _context.SaveChangesAsync();
-
-            if (result > 0)
-            {
-                return NoContent();
-            }
-            return BadRequest();
-        }
-
-        [HttpDelete("{knowledgeBaseId}/report/{reportId}")]
+        [HttpDelete("{knowledgeBaseId}/reports/{reportId}")]
         public async Task<IActionResult> DeleteReport(int knowledgeBaseId, int reportId)
         {
             var report = await _context.Reports.FindAsync(reportId);
             if (report == null)
-                return NotFound();
+                return BadRequest(new ApiBadRequestResponse($"Cannot found report with id {reportId}"));
 
             _context.Reports.Remove(report);
+
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(knowledgeBaseId);
-            if (knowledgeBase != null)
-                return BadRequest();
+            if (knowledgeBase == null)
+                return BadRequest(new ApiBadRequestResponse($"Cannot found knowledge base with id {knowledgeBaseId}"));
 
             knowledgeBase.NumberOfReports = knowledgeBase.NumberOfReports.GetValueOrDefault(0) - 1;
             _context.KnowledgeBases.Update(knowledgeBase);
+
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {
                 return Ok();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse($"Delete report failed"));
         }
         #endregion
     }

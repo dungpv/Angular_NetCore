@@ -122,7 +122,21 @@ namespace KnowledgeSpace.WebPortal.Controllers
             var result = await _knowledgeBaseApiClient.PostVote(request);
             return Ok(result);
         }
-
+        [HttpPost]
+        public async Task<IActionResult> PostReport([FromForm] ReportCreateRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!Captcha.ValidateCaptchaCode(request.CaptchaCode, HttpContext))
+            {
+                ModelState.AddModelError("", "Mã xác nhận không đúng");
+                return BadRequest(ModelState);
+            }
+            var result = await _knowledgeBaseApiClient.PostReport(request);
+            return Ok(result);
+        }
         #endregion AJAX Methods
     }
 }
