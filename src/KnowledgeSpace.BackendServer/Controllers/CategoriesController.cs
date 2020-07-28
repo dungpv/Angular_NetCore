@@ -13,15 +13,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using KnowledgeSpace.BackendServer.Services;
 
 namespace KnowledgeSpace.BackendServer.Controllers
 {
     public class CategoriesController : BaseController
     {
         private readonly ApplicationDbContext _context;
-        public CategoriesController(ApplicationDbContext context)
+        private readonly ICacheService _cacheService;
+        public CategoriesController(ApplicationDbContext context,
+            ICacheService cacheService)
         {
             _context = context;
+            _cacheService = cacheService;
         }
         [HttpPost]
         [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.CREATE)]
@@ -39,6 +43,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {
+                await _cacheService.RemoveAsync("Categories");
                 return CreatedAtAction(nameof(GetById), new { id = category.Id }, request);
             }
             else
@@ -64,11 +69,17 @@ namespace KnowledgeSpace.BackendServer.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetCategories()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var cachedData = await _cacheService.GetAsync<List<CategoryVm>>("Categories");
+            if (cachedData == null)
+            {
+                var categorys = await _context.Categories.ToListAsync();
 
-            var categoryvms =  categories.Select(c => CreateCategoryVm(c)).ToList();
+                var categoryVms = categorys.Select(c => CreateCategoryVm(c)).ToList();
+                await _cacheService.SetAsync("Categories", categoryVms);
+                cachedData = categoryVms;
+            }
 
-            return Ok(categoryvms);
+            return Ok(cachedData);
         }
         // URL: GET: http://localhost:5001/api/Category/?quer
         [HttpGet("filter")]
@@ -114,6 +125,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var result = await _context.SaveChangesAsync();
             if (result > 0)
             {
+                await _cacheService.RemoveAsync("Categories");
                 return NoContent();
             }
             return BadRequest();
@@ -133,6 +145,8 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             if (result > 0)
             {
+                await _cacheService.RemoveAsync("Categories");
+
                 CategoryVm categoryvm = CreateCategoryVm(category);
                 return Ok(categoryvm);
             }

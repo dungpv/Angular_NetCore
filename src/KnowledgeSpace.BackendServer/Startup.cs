@@ -112,6 +112,7 @@ namespace KnowledgeSpace.BackendServer
             services.AddTransient<IStorageService, FileStorageService>();
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
             services.AddTransient<IViewRenderService, ViewRenderService>();
+            services.AddTransient<ICacheService, DistributedCacheService>();
 
             services.AddRazorPages(options =>
             {
@@ -150,6 +151,13 @@ namespace KnowledgeSpace.BackendServer
                         new List<string>{ "api.knowledgespace" }
                     }
                 });
+            });
+
+            services.AddDistributedSqlServerCache(o =>
+            {
+                o.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
+                o.SchemaName = "dbo";
+                o.TableName = "CacheTable";
             });
         }
 
