@@ -17,6 +17,7 @@ using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -29,13 +30,21 @@ namespace KnowledgeSpace.BackendServer.Controllers
         private readonly ISequenceService _sequenceService;
         private readonly IStorageService _storageService;
         private readonly ILogger<KnowledgeBasesController> _logger;
-        public KnowledgeBasesController(ApplicationDbContext context, ISequenceService sequenceService, IStorageService storageService
-            ,ILogger<KnowledgeBasesController> logger)
+        private readonly IEmailSender _emailSender;
+        private readonly IViewRenderService _viewRenderService;
+        public KnowledgeBasesController(ApplicationDbContext context
+            , ISequenceService sequenceService
+            , IStorageService storageService
+            , ILogger<KnowledgeBasesController> logger
+            , IEmailSender emailSender
+            , IViewRenderService viewRenderService)
         {
             _context = context;
             _sequenceService = sequenceService;
             _storageService = storageService;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _emailSender = emailSender;
+            _viewRenderService = viewRenderService;
         }
         #region Knowledge base
         [HttpPost]

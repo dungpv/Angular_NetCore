@@ -21,6 +21,7 @@ using KnowledgeSpace.BackendServer.IdentityServer;
 using KnowledgeSpace.BackendServer.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using KnowledgeSpace.BackendServer.Extensions;
+using KnowledgeSpace.ViewModels;
 
 namespace KnowledgeSpace.BackendServer
 {
@@ -109,6 +110,8 @@ namespace KnowledgeSpace.BackendServer
             services.AddTransient<IEmailSender, EmailSenderService>();
             services.AddTransient<ISequenceService, SequenceService>();
             services.AddTransient<IStorageService, FileStorageService>();
+            services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
+            services.AddTransient<IViewRenderService, ViewRenderService>();
 
             services.AddRazorPages(options =>
             {
