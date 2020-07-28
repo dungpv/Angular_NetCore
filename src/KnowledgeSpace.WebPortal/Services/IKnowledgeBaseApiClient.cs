@@ -20,8 +20,10 @@ namespace KnowledgeSpace.WebPortal.Services
         Task<List<CommentVm>> GetRecentComments(int take);
         Task<Pagination<CommentVm>> GetCommentsTree(int knowledgeBaseId, int pageIndex, int pageSize);
         Task<Pagination<CommentVm>> GetRepliedComments(int knowledgeBaseId, int rootCommentId, int pageIndex, int pageSize);
-
         Task<CommentVm> PostComment(CommentCreateRequest request);
         Task<bool> PostKnowlegdeBase(KnowledgeBaseCreateRequest request);
+        Task<bool> PutKnowlegdeBase(int id, KnowledgeBaseCreateRequest request);
+        Task<bool> UpdateViewCount(int id);
+        Task<int> PostVote(VoteCreateRequest request);
     }
 }

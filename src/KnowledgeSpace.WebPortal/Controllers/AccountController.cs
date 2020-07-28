@@ -100,26 +100,26 @@ namespace KnowledgeSpace.WebPortal.Controllers
             });
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> EditKnowledgeBase([FromForm] KnowledgeBaseCreateRequest request)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    if (!Captcha.ValidateCaptchaCode(request.CaptchaCode, HttpContext))
-        //    {
-        //        ModelState.AddModelError("", "Mã xác nhận không đúng");
-        //        return BadRequest(ModelState);
-        //    }
+        [HttpPost]
+        public async Task<IActionResult> EditKnowledgeBase([FromForm] KnowledgeBaseCreateRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!Captcha.ValidateCaptchaCode(request.CaptchaCode, HttpContext))
+            {
+                ModelState.AddModelError("", "Mã xác nhận không đúng");
+                return BadRequest(ModelState);
+            }
 
-        //    var result = await _knowledgeBaseApiClient.PutKnowlegdeBase(request.Id.Value, request);
-        //    if (result)
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
+            var result = await _knowledgeBaseApiClient.PutKnowlegdeBase(request.Id.Value, request);
+            if (result)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
 
         private async Task SetCategoriesViewBag(int? selectedValue = null)
         {

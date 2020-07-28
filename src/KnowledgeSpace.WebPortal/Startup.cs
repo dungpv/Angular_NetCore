@@ -203,34 +203,43 @@ namespace KnowledgeSpace.WebPortal
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "My KBs",
-                    pattern: "/my-kbs",
-                    new { controller = "Account", action = "MyKnowledgeBases" });
-                endpoints.MapControllerRoute(
-                   name: "New KB",
-                   pattern: "/new-kb",
-                   new { controller = "Account", action = "CreateNewKnowledgeBase" });
-                endpoints.MapControllerRoute(
-                   name: "List By Tag Id",
-                   pattern: "/tag/{tagId}",
-                   new { controller = "KnowledgeBase", action = "ListByTag" });
-                endpoints.MapControllerRoute(
-                    name: "Search KB",
-                    pattern: "/search",
-                    new { controller = "KnowledgeBase", action = "Search" });
-                endpoints.MapControllerRoute(
-                    name: "ListByCategoryId",
-                    pattern: "/cat/{categoryAlias}-{id}",
-                    new { controller = "KnowledgeBase", action = "ListByCategoryId" });
-                endpoints.MapControllerRoute(
-                    name: "KnowledgeBaseDetails",
-                    pattern: "/kb/{seoAlias}-{id}",
-                    new { controller = "KnowledgeBase", action = "Details" });
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                RoutingBuilder(endpoints);
             });
+        }
+
+        private static void RoutingBuilder(IEndpointRouteBuilder endpoints)
+        {
+            endpoints.MapControllerRoute(
+                name: "My KBs",
+                pattern: "/my-kbs",
+                new { controller = "Account", action = "MyKnowledgeBases" });
+            endpoints.MapControllerRoute(
+               name: "New KB",
+               pattern: "/new-kb",
+               new { controller = "Account", action = "CreateNewKnowledgeBase" });
+            endpoints.MapControllerRoute(
+                name: "Edit KB",
+                pattern: "/edit-kb/{id}",
+                new { controller = "Account", action = "EditKnowledgeBase" });
+            endpoints.MapControllerRoute(
+               name: "List By Tag Id",
+               pattern: "/tag/{tagId}",
+               new { controller = "KnowledgeBase", action = "ListByTag" });
+            endpoints.MapControllerRoute(
+                name: "Search KB",
+                pattern: "/search",
+                new { controller = "KnowledgeBase", action = "Search" });
+            endpoints.MapControllerRoute(
+                name: "ListByCategoryId",
+                pattern: "/cat/{categoryAlias}-{id}",
+                new { controller = "KnowledgeBase", action = "ListByCategoryId" });
+            endpoints.MapControllerRoute(
+                name: "KnowledgeBaseDetails",
+                pattern: "/kb/{seoAlias}-{id}",
+                new { controller = "KnowledgeBase", action = "Details" });
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
         }
     }
 }

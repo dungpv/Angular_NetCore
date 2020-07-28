@@ -125,10 +125,62 @@ namespace KnowledgeSpace.WebPortal.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> PutKnowlegdeBase(int id, KnowledgeBaseCreateRequest request)
+        {
+            var client = _httpClientFactory.CreateClient("BackendApi");
+
+            client.BaseAddress = new Uri(_configuration["BackendApiUrl"]);
+            using var requestContent = new MultipartFormDataContent();
+
+            if (request.Attachments?.Count > 0)
+            {
+                foreach (var item in request.Attachments)
+                {
+                    byte[] data;
+                    using (var br = new BinaryReader(item.OpenReadStream()))
+                    {
+                        data = br.ReadBytes((int)item.OpenReadStream().Length);
+                    }
+                    ByteArrayContent bytes = new ByteArrayContent(data);
+                    requestContent.Add(bytes, "attachments", item.FileName);
+                }
+            }
+            requestContent.Add(new StringContent(request.CategoryId.ToString()), "categoryId");
+            requestContent.Add(new StringContent(request.Title.ToString()), "title");
+            requestContent.Add(new StringContent(request.Problem.ToString()), "problem");
+            requestContent.Add(new StringContent(request.Note.ToString()), "note");
+            requestContent.Add(new StringContent(request.Description.ToString()), "description");
+            requestContent.Add(new StringContent(request.Environment.ToString()), "environment");
+            requestContent.Add(new StringContent(request.StepToReproduce.ToString()), "stepToReproduce");
+            requestContent.Add(new StringContent(request.ErrorMessage.ToString()), "errorMessage");
+            requestContent.Add(new StringContent(request.Workaround.ToString()), "workaround");
+            if (request.Labels?.Length > 0)
+            {
+                foreach (var label in request.Labels)
+                {
+                    requestContent.Add(new StringContent(label), "labels");
+                }
+            }
+
+            var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.PutAsync($"/api/knowledgeBases/{id}", requestContent);
+            return response.IsSuccessStatusCode;
+        }
+
         public async Task<Pagination<KnowledgeBaseQuickVm>> SearchKnowledgeBase(string keyword, int pageIndex, int pageSize)
         {
             var apiUrl = $"/api/knowledgeBases/filter?filter={keyword}&pageIndex={pageIndex}&pageSize={pageSize}";
             return await GetAsync<Pagination<KnowledgeBaseQuickVm>>(apiUrl);
+        }
+        public async Task<bool> UpdateViewCount(int id)
+        {
+            return await PutAsync<object, bool>($"/api/knowledgeBases/{id}/view-count", null, false);
+        }
+        public async Task<int> PostVote(VoteCreateRequest request)
+        {
+            return await PostAsync<VoteCreateRequest, int>($"/api/knowledgeBases/{request.KnowledgeBaseId}/votes", null);
         }
     }
 }
