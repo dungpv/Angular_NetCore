@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Extensions;
-using KnowledgeSpace.BackendServer.Helper;
+using KnowledgeSpace.BackendServer.Helpers;
 using KnowledgeSpace.ViewModels.Contents;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,8 +32,9 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             return Ok(votes);
         }
-        [HttpPut("{knowledgeBaseId}/votes")]
-        public async Task<IActionResult> PostVote(int knowledgeBaseId, [FromBody]VoteCreateRequest request)
+
+        [HttpPost("{knowledgeBaseId}/votes")]
+        public async Task<IActionResult> PostVote(int knowledgeBaseId)
         {
             var userId = User.GetUserId();
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(knowledgeBaseId);

@@ -1,33 +1,33 @@
 ﻿using KnowledgeSpace.ViewModels.Systems;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
-namespace KnowledgeSpace.ViewModels.UnitTest.System
+namespace KnowledgeSpace.ViewModels.UnitTest.Systems
 {
     public class FunctionCreateRequestValidatorTest
     {
         private FunctionCreateRequestValidator validator;
         private FunctionCreateRequest request;
+
         public FunctionCreateRequestValidatorTest()
         {
             request = new FunctionCreateRequest()
             {
-                Id = "test1",
+                Id = "test6",
                 ParentId = null,
-                Name = "test1",
-                SortOrder = 1,
-                Url = "/test1"
+                Name = "test6",
+                SortOrder = 6,
+                Url = "/test6"
             };
             validator = new FunctionCreateRequestValidator();
         }
+
         [Fact]
         public void Should_Valid_Result_When_Valid_Request()
         {
             var result = validator.Validate(request);
             Assert.True(result.IsValid);
         }
+
         [Theory]
         [InlineData("")]
         [InlineData(null)]
@@ -37,7 +37,17 @@ namespace KnowledgeSpace.ViewModels.UnitTest.System
             var result = validator.Validate(request);
             Assert.False(result.IsValid);
         }
-        
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Should_Error_Result_When_Miss_Name(string data)
+        {
+            request.Name = data;
+            var result = validator.Validate(request);
+            Assert.False(result.IsValid);
+        }
+
         [Theory]
         [InlineData("")]
         [InlineData(null)]
@@ -47,6 +57,5 @@ namespace KnowledgeSpace.ViewModels.UnitTest.System
             var result = validator.Validate(request);
             Assert.False(result.IsValid);
         }
-        
     }
 }

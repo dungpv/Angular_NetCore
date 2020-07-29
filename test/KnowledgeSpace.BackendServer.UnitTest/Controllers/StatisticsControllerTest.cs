@@ -4,11 +4,11 @@ using Xunit;
 
 namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
 {
-    public class CommandsControllerTest
+    public class StatisticsControllerTest
     {
         private ApplicationDbContext _context;
 
-        public CommandsControllerTest()
+        public StatisticsControllerTest()
         {
             _context = new InMemoryDbContextFactory().GetApplicationDbContext();
         }
@@ -16,8 +16,8 @@ namespace KnowledgeSpace.BackendServer.UnitTest.Controllers
         [Fact]
         public void ShouldCreateInstance_NotNull_Success()
         {
-            var usersController = new CommandsController(_context);
-            Assert.NotNull(usersController);
+            var controller = new StatisticsController(_context);
+            Assert.NotNull(controller);
         }
     }
 }

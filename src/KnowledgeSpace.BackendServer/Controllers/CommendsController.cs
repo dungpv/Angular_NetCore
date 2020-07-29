@@ -7,7 +7,7 @@ using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Extensions;
-using KnowledgeSpace.BackendServer.Helper;
+using KnowledgeSpace.BackendServer.Helpers;
 using KnowledgeSpace.BackendServer.Models;
 using KnowledgeSpace.ViewModels;
 using KnowledgeSpace.ViewModels.Contents;

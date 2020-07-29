@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using KnowledgeSpace.BackendServer.Authorization;
 using KnowledgeSpace.BackendServer.Constants;
-using KnowledgeSpace.BackendServer.Helper;
+using KnowledgeSpace.BackendServer.Helpers;
 using Microsoft.Extensions.Logging;
 using KnowledgeSpace.ViewModels;
 
@@ -21,20 +21,22 @@ namespace KnowledgeSpace.BackendServer.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<FunctionsController> _logger;
-        public FunctionsController(ApplicationDbContext context, ILogger<FunctionsController> logger)
+        public FunctionsController(ApplicationDbContext context,
+            ILogger<FunctionsController> logger)
         {
             _context = context;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger;
         }
         [HttpPost]
         [ClaimRequirement(FunctionCode.SYSTEM_FUNCTION, CommandCode.CREATE)]
-        [ApiValidationFilterAttribute]
-        public async Task<IActionResult> PostFunction([FromBody]FunctionCreateRequest request)
+        [ApiValidationFilter]
+        public async Task<IActionResult> PostFunction([FromBody] FunctionCreateRequest request)
         {
             _logger.LogInformation("Begin PostFunction API");
+
             var dbFunction = await _context.Functions.FindAsync(request.Id);
-            if (dbFunction == null)
-                return BadRequest(new ApiBadRequestResponse($"Function with Id {request.Id} is existed"));
+            if (dbFunction != null)
+                return BadRequest(new ApiBadRequestResponse($"Function with id {request.Id} is existed."));
 
             var function = new Function()
             {
@@ -43,18 +45,21 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 ParentId = request.ParentId,
                 SortOrder = request.SortOrder,
                 Url = request.Url,
-                Icon = request.Icon,
+                Icon = request.Icon
             };
             _context.Functions.Add(function);
             var result = await _context.SaveChangesAsync();
+
             if (result > 0)
             {
                 _logger.LogInformation("End PostFunction API - Success");
+
                 return CreatedAtAction(nameof(GetById), new { id = function.Id }, request);
             }
             else
             {
                 _logger.LogInformation("End PostFunction API - Failed");
+
                 return BadRequest(new ApiBadRequestResponse("Create function is failed"));
             }
         }

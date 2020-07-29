@@ -113,7 +113,7 @@ namespace KnowledgeSpace.BackendServer
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
             services.AddTransient<IViewRenderService, ViewRenderService>();
             services.AddTransient<ICacheService, DistributedCacheService>();
-
+            services.AddTransient<IOneSignalService, OneSignalService>();
             services.AddRazorPages(options =>
             {
                 options.Conventions.AddAreaFolderRouteModelConvention("Identity", "/Account/", model =>

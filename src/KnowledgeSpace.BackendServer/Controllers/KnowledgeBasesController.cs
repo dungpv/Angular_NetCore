@@ -10,7 +10,7 @@ using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Extensions;
-using KnowledgeSpace.BackendServer.Helper;
+using KnowledgeSpace.BackendServer.Helpers;
 using KnowledgeSpace.BackendServer.Services;
 using KnowledgeSpace.ViewModels;
 using KnowledgeSpace.ViewModels.Contents;
@@ -33,6 +33,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IViewRenderService _viewRenderService;
         private readonly ICacheService _cacheService;
+        private readonly IOneSignalService _oneSignalService;
 
         public KnowledgeBasesController(ApplicationDbContext context
             , ISequenceService sequenceService
@@ -40,7 +41,8 @@ namespace KnowledgeSpace.BackendServer.Controllers
             , ILogger<KnowledgeBasesController> logger
             , IEmailSender emailSender
             , IViewRenderService viewRenderService
-            , ICacheService cacheService)
+            , ICacheService cacheService
+            , IOneSignalService oneSignalService)
         {
             _context = context;
             _sequenceService = sequenceService;
@@ -49,13 +51,14 @@ namespace KnowledgeSpace.BackendServer.Controllers
             _emailSender = emailSender;
             _viewRenderService = viewRenderService;
             _cacheService = cacheService;
+            _oneSignalService = oneSignalService;
         }
         #region Knowledge base
         [HttpPost]
         [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.CREATE)]
         [ApiValidationFilter]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> PostKnowledgeBase([FromForm]KnowledgeBaseCreateRequest request)
+        public async Task<IActionResult> PostKnowledgeBase([FromForm] KnowledgeBaseCreateRequest request)
         {
             _logger.LogInformation("Begin PostKnowledgeBase API");
             KnowledgeBase knowledgeBase = CreateKnowledgeBaseEntity(request);
@@ -91,7 +94,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 await _cacheService.RemoveAsync(CacheConstants.PopularKnowledgeBases);
 
                 _logger.LogInformation("End PostKnowledgeBase API - Success");
-
+                await _oneSignalService.SendAsync(request.Title, request.Description,string.Format(CommonConstants.KnowledgeBaseUrl, knowledgeBase.SeoAlias, knowledgeBase.Id));
                 return CreatedAtAction(nameof(GetById), new
                 {
                     id = knowledgeBase.Id
@@ -245,7 +248,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.UPDATE)]
         [ApiValidationFilter]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> PutKnowledgeBase(int id, [FromForm]KnowledgeBaseCreateRequest request)
+        public async Task<IActionResult> PutKnowledgeBase(int id, [FromForm] KnowledgeBaseCreateRequest request)
         {
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(id);
             if (knowledgeBase == null)

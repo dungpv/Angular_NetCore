@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KnowledgeSpace.BackendServer.Helper
+namespace KnowledgeSpace.BackendServer.Helpers
 {
     public class ApiValidationFilterAttribute : ActionFilterAttribute
     {

@@ -1,4 +1,4 @@
-﻿using KnowledgeSpace.BackendServer.Helper;
+﻿using KnowledgeSpace.BackendServer.Helpers;
 using Microsoft.AspNetCore.Builder;
 using System;
 using System.Collections.Generic;

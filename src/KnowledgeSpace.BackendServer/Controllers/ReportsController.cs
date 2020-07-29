@@ -6,7 +6,7 @@ using KnowledgeSpace.BackendServer.Authorization;
 using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Extensions;
-using KnowledgeSpace.BackendServer.Helper;
+using KnowledgeSpace.BackendServer.Helpers;
 using KnowledgeSpace.ViewModels;
 using KnowledgeSpace.ViewModels.Contents;
 using KnowledgeSpace.ViewModels.Systems;

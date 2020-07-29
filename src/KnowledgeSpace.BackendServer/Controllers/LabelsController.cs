@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
-using KnowledgeSpace.BackendServer.Helper;
+using KnowledgeSpace.BackendServer.Helpers;
 using KnowledgeSpace.BackendServer.Services;
 using KnowledgeSpace.ViewModels.Contents;
 using Microsoft.AspNetCore.Authorization;
