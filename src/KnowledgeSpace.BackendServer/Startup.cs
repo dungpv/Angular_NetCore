@@ -168,6 +168,15 @@ namespace KnowledgeSpace.BackendServer
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseHsts(hsts => hsts.MaxAge(365).IncludeSubdomains().Preload());
+
+                app.UseXContentTypeOptions();
+                app.UseReferrerPolicy(opts => opts.NoReferrer());
+                app.UseXXssProtection(options => options.EnabledWithBlockMode());
+                app.UseXfo(options => options.Deny());
+            }
             app.UseErrorWrapping();
             app.UseStaticFiles();
             app.UseIdentityServer();
