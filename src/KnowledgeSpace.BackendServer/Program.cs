@@ -40,13 +40,14 @@ namespace KnowledgeSpace.BackendServer
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                   .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
-                    .ReadFrom.Configuration(hostingContext.Configuration))
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
-                    webBuilder.UseStartup<Startup>();
-                });
+                   Host.CreateDefaultBuilder(args)
+                            .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
+                           .ReadFrom.Configuration(hostingContext.Configuration))
+                           .ConfigureWebHostDefaults(webBuilder =>
+                           {
+                               webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
+                               webBuilder.UseStartup<Startup>();
+                               webBuilder.UseIISIntegration();
+                           });
     }
 }

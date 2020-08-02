@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using IdentityModel.Client;
 using KnowledgeSpace.ViewModels.Contents;
+using KnowledgeSpace.WebPortal.Extensions;
 using KnowledgeSpace.WebPortal.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -198,7 +199,9 @@ namespace KnowledgeSpace.WebPortal
                 app.UseXfo(options => options.Deny());
             }
             app.UseSession();
+
             app.UseHttpsRedirection();
+            app.UseErrorWrapping();
 
             app.UseStaticFiles();
 
