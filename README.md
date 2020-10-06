@@ -27,8 +27,10 @@ For each KB, user can vote it and comment to below KB.
 # Commands
 1.  Migration
 	Add-Migration Initial -OutputDir Data/Migrations
+    Add-Migration InitialMain -Context MainDbContext -o Data/Migrations/Main
 2. Update database
 	Update-Database
+    Update-Database -Context MainDbContext
 
 # Git references
 - [Tedu] (https://dev.azure.com/tedu-official/KnowledgeSpace/_git/KnowledgeSpace)

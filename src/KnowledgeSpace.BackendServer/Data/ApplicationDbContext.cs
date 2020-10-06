@@ -73,5 +73,40 @@ namespace KnowledgeSpace.BackendServer.Data
         public DbSet<Vote> Votes { set; get; }
 
         public DbSet<Attachment> Attachments { get; set; }
+
+        public DbSet<DmCapDonVi> DmCapDonVi { set; get; }
+        public DbSet<DmCapHoc> DmCapHoc { set; get; }
+        public DbSet<DmCumThiDua> DmCumThiDua { set; get; }
+        public DbSet<DmDanToc> DmDanToc { set; get; }
+        public DbSet<DmHuyen> DmHuyen { set; get; }
+        public DbSet<DmKhoi> DmKhoi { set; get; }
+        public DbSet<DmLoaiCanBo> DmLoaiCanBo { set; get; }
+        public DbSet<DmLoaiHinh> DmLoaiHinh { set; get; }
+        public DbSet<DmLoaiKhuyetTat> DmLoaiKhuyetTat { set; get; }
+        public DbSet<DmLoaiTruong> DmLoaiTruong { set; get; }
+        public DbSet<DmLyDoNghiViec> DmLyDoNghiViec { set; get; }
+        public DbSet<DmLyDoThoiHoc> DmLyDoThoiHoc { set; get; }
+        public DbSet<DmMonDayGV> DmMonDayGV { set; get; }
+        public DbSet<DmMonHoc> DmMonHoc { set; get; }
+        public DbSet<DmNgach> DmNgach { set; get; }
+        public DbSet<DmNhomCanBo> DmNhomCanBo { set; get; }
+        public DbSet<DmNhomCapHoc> DmNhomCapHoc { set; get; }
+        public DbSet<DmNhomTuoiMN> DmNhomTuoiMN { set; get; }
+        public DbSet<DmNuoc> DmNuoc { set; get; }
+        public DbSet<DmSoBuoiHocTrenTuan> DmSoBuoiHocTrenTuan { set; get; }
+        public DbSet<DmTinh> DmTinh { set; get; }
+        public DbSet<DMTonGiao> DMTonGiao { set; get; }
+        public DbSet<DmTrangThaiCanBo> DmTrangThaiCanBo { set; get; }
+        public DbSet<DmTrangThaiHocSinh> DmTrangThaiHocSinh { set; get; }
+        public DbSet<DmTrinhDoChuyenMonNghiepVu> DmTrinhDoChuyenMonNghiepVu { set; get; }
+        public DbSet<DmVung> DmVung { set; get; }
+        public DbSet<DmXa> DmXa { set; get; }
+        public DbSet<NamHoc> NamHoc { set; get; }
+        public DbSet<PhongGD> PhongGD { set; get; }
+        public DbSet<SoGD> SoGD { set; get; }
+        public DbSet<Truong> Truong { set; get; }
+        public DbSet<Lop> Lop { set; get; }
+        public DbSet<HocSinh> HocSinh { set; get; }
+        public DbSet<NhanSu> NhanSu { set; get; }
     }
 }
