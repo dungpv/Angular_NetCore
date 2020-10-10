@@ -10,23 +10,23 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
         [Key]
         [MaxLength(20)]
         [Column(TypeName = "nvarchar(20)")]
-        public string MA { get; set; }
+        public string Ma { get; set; }
 
         [MaxLength(50)]
         [Required]
         [Column(TypeName = "nvarchar(50)")]
-        public string TEN { get; set; }
+        public string Ten { get; set; }
 
-        public int THU_TU { get; set; }
-
-        [Column(TypeName = "numeric(18,0)")]
-        public decimal NGUOI_TAO { get; set; }
-
-        public DateTime NGAY_TAO { get; set; }
+        public int ThuTu { get; set; }
 
         [Column(TypeName = "numeric(18,0)")]
-        public decimal NGUOI_SUA { get; set; }
+        public decimal NguoiTao { get; set; }
 
-        public DateTime NGAY_SUA { get; set; }
+        public DateTime NgayTao { get; set; }
+
+        [Column(TypeName = "numeric(18,0)")]
+        public decimal NguoiSua { get; set; }
+
+        public DateTime NgaySua { get; set; }
     }
 }

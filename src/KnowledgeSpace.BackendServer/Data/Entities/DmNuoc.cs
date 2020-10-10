@@ -16,7 +16,7 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
         [Required]
         [Column(TypeName = "nvarchar(50)")]
         public string Ten { get; set; }
-
+        public int ThuTu { get; set; }
         [Column(TypeName = "numeric(18,0)")]
         public decimal NguoiTao { get; set; }
         public DateTime NgayTao { get; set; }

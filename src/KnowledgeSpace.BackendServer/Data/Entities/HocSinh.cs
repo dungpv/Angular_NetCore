@@ -56,7 +56,7 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
         public string MaDanToc { get; set; }
 
         [Column(TypeName = "nvarchar(20)")]
-        public string TrangThai { get; set; }
+        public string MaTrangThai { get; set; }
 
         [Column(TypeName = "nvarchar(20)")]
         public string MaLyDoThoiHoc { get; set; }
