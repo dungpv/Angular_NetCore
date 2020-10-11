@@ -13,7 +13,7 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string TenHuyen { get; set; }
         public string Ma { get; set; }
         public string Ten { get; set; }
-        public int ThuTu { get; set; }
+        public int? ThuTu { get; set; }
         public string Cap { get; set; }
     }
 }

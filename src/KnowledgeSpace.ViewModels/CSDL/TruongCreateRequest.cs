@@ -25,17 +25,17 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string Email { get; set; }
         public string Fax { get; set; }
         public string Website { get; set; }
-        public int ThuTu { get; set; }
-        public int TrangThai { get; set; }
-        public int IsCapMN { get; set; }
-        public int IsCapTH { get; set; }
-        public int IsCapTHCS { get; set; }
-        public int IsCapTHPT { get; set; }
-        public int IsCapGDTX { get; set; }
+        public int? ThuTu { get; set; }
+        public int? TrangThai { get; set; }
+        public int? IsCapMN { get; set; }
+        public int? IsCapTH { get; set; }
+        public int? IsCapTHCS { get; set; }
+        public int? IsCapTHPT { get; set; }
+        public int? IsCapGDTX { get; set; }
         public string MaVung { get; set; }
         public decimal? NguoiTao { get; set; }
-        public DateTime NgayTao { get; set; }
+        public DateTime? NgayTao { get; set; }
         public decimal? NguoiSua { get; set; }
-        public DateTime NgaySua { get; set; }
+        public DateTime? NgaySua { get; set; }
     }
 }

@@ -30,7 +30,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Ma = u.Ma,
                 Ten = u.Ten,
                 TenGoiKhac = u.TenGoiKhac,
-                ThuTu = u.ThuTu,
+                ThuTu = u.ThuTu.Value,
             }).ToListAsync();
 
             return Ok(dmDanTocVms);

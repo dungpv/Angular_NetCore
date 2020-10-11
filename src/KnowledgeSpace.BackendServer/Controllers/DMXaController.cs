@@ -50,7 +50,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Ma = u.x.Ma,
                 Ten = u.x.Ten,
                 Cap = u.x.Cap,
-                ThuTu = u.x.ThuTu,
+                ThuTu = u.x.ThuTu.Value,
 
             }).ToListAsync();
 

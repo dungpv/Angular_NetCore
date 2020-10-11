@@ -50,7 +50,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Email = request.Email,
                 Fax = request.Fax,
                 Website = request.Website,
-                ThuTu = request.ThuTu,
+                ThuTu = request.ThuTu.Value,
                 MaNamHoc = request.MaNamHoc,
                 MaVung = request.MaVung,
             };
@@ -140,7 +140,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Fax = u.p.Fax,
                 Website = u.p.Website,
                 TenVung = u.v.Ten,
-                ThuTu = u.s.ThuTu,
+                ThuTu = u.s.ThuTu.Value,
 
             }).ToListAsync();
 

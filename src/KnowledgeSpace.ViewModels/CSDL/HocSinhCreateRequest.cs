@@ -24,10 +24,10 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string MaQuocTich { get; set; }
         public string MaTonGiao { get; set; }
         public string MaSoBuoiHocTrenTuan { get; set; }
-        public int ThuTu { get; set; }
+        public int? ThuTu { get; set; }
         public decimal? NguoiTao { get; set; }
-        public DateTime NgayTao { get; set; }
+        public DateTime? NgayTao { get; set; }
         public decimal? NguoiSua { get; set; }
-        public DateTime NgaySua { get; set; }
+        public DateTime? NgaySua { get; set; }
     }
 }

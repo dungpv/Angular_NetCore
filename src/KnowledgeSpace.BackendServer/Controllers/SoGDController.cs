@@ -39,7 +39,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Fax = u.s.Fax,
                 Website = u.s.Website,
                 TenCumThiDua = u.c.Ten,
-                ThuTu = u.s.ThuTu,
+                ThuTu = u.s.ThuTu.Value,
 
             }).ToListAsync();
 

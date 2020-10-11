@@ -4,14 +4,16 @@ using KnowledgeSpace.BackendServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KnowledgeSpace.BackendServer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201011084701_AllowNullAllTable")]
+    partial class AllowNullAllTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -214,7 +216,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -323,7 +325,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<DateTime?>("NgayTao")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("NguoiSua")
+                    b.Property<decimal>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<decimal?>("NguoiTao")
@@ -356,6 +358,9 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<string>("Cap")
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("DmTinhMa")
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("Ma")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
@@ -367,6 +372,9 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<string>("MaTinh")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("NamHocMa")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("NgaySua")
                         .HasColumnType("datetime2");
 
@@ -376,7 +384,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -389,6 +397,10 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DmTinhMa");
+
+                    b.HasIndex("NamHocMa");
+
                     b.ToTable("DmHuyen");
                 });
 
@@ -398,6 +410,9 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(18,0)")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("DmCapHocMa")
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Ma")
                         .IsRequired()
@@ -419,7 +434,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -431,6 +446,8 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DmCapHocMa");
 
                     b.ToTable("DmKhoi");
                 });
@@ -470,7 +487,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -525,7 +542,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -556,7 +573,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -601,7 +618,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -632,7 +649,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -663,7 +680,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -713,7 +730,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -736,6 +753,9 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("DmCapHocMa")
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<int?>("IsMonTC")
                         .HasColumnType("int");
 
@@ -756,6 +776,9 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<int>("MaNamHoc")
                         .HasColumnType("int");
 
+                    b.Property<int?>("NamHocMa")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("NgaySua")
                         .HasColumnType("datetime2");
 
@@ -765,7 +788,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -777,6 +800,10 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DmCapHocMa");
+
+                    b.HasIndex("NamHocMa");
 
                     b.ToTable("DmMonHoc");
                 });
@@ -817,7 +844,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -863,7 +890,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -900,7 +927,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -931,7 +958,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -959,7 +986,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -990,7 +1017,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -1024,7 +1051,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -1055,7 +1082,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -1089,7 +1116,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -1129,7 +1156,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -1151,9 +1178,6 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
 
-                    b.Property<int>("MaNamHoc")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("NgaySua")
                         .HasColumnType("datetime2");
 
@@ -1163,7 +1187,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -1188,6 +1212,12 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
 
                     b.Property<string>("Cap")
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("DmHuyenId")
+                        .HasColumnType("numeric(18,0)");
+
+                    b.Property<string>("DmTinhMa")
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("IdHuyen")
                         .HasColumnType("numeric(18,0)");
@@ -1215,7 +1245,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -1227,6 +1257,10 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DmHuyenId");
+
+                    b.HasIndex("DmTinhMa");
 
                     b.ToTable("DmXa");
                 });
@@ -1335,13 +1369,28 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
+
+                    b.Property<decimal?>("PhongGDId")
+                        .HasColumnType("numeric(18,0)");
+
+                    b.Property<string>("SoGDMa")
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int?>("ThuTu")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("TruongId")
+                        .HasColumnType("numeric(18,0)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PhongGDId");
+
+                    b.HasIndex("SoGDMa");
+
+                    b.HasIndex("TruongId");
 
                     b.ToTable("HocSinh");
                 });
@@ -1506,8 +1555,14 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
+
+                    b.Property<decimal?>("PhongGDId")
+                        .HasColumnType("numeric(18,0)");
+
+                    b.Property<string>("SoGDMa")
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Ten")
                         .IsRequired()
@@ -1520,7 +1575,16 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<int?>("TrangThai")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("TruongId")
+                        .HasColumnType("numeric(18,0)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PhongGDId");
+
+                    b.HasIndex("SoGDMa");
+
+                    b.HasIndex("TruongId");
 
                     b.ToTable("Lop");
                 });
@@ -1542,7 +1606,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -1633,13 +1697,28 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
+
+                    b.Property<decimal?>("PhongGDId")
+                        .HasColumnType("numeric(18,0)");
+
+                    b.Property<string>("SoGDMa")
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int?>("ThuTu")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("TruongId")
+                        .HasColumnType("numeric(18,0)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PhongGDId");
+
+                    b.HasIndex("SoGDMa");
+
+                    b.HasIndex("TruongId");
 
                     b.ToTable("NhanSu");
                 });
@@ -1715,8 +1794,11 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
+
+                    b.Property<string>("SoGDMa")
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Ten")
                         .IsRequired()
@@ -1733,6 +1815,8 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SoGDMa");
 
                     b.ToTable("PhongGD");
                 });
@@ -1802,7 +1886,7 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
 
                     b.Property<string>("Ten")
@@ -1911,8 +1995,14 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.Property<decimal?>("NguoiSua")
                         .HasColumnType("numeric(18,0)");
 
-                    b.Property<decimal?>("NguoiTao")
+                    b.Property<decimal>("NguoiTao")
                         .HasColumnType("numeric(18,0)");
+
+                    b.Property<decimal?>("PhongGDId")
+                        .HasColumnType("numeric(18,0)");
+
+                    b.Property<string>("SoGDMa")
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Ten")
                         .IsRequired()
@@ -1929,6 +2019,10 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PhongGDId");
+
+                    b.HasIndex("SoGDMa");
 
                     b.ToTable("Truong");
                 });
@@ -2179,6 +2273,109 @@ namespace KnowledgeSpace.BackendServer.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.DmHuyen", b =>
+                {
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.DmTinh", "DmTinh")
+                        .WithMany("DmHuyen")
+                        .HasForeignKey("DmTinhMa");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.NamHoc", "NamHoc")
+                        .WithMany()
+                        .HasForeignKey("NamHocMa");
+                });
+
+            modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.DmKhoi", b =>
+                {
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.DmCapHoc", "DmCapHoc")
+                        .WithMany("DmKhoi")
+                        .HasForeignKey("DmCapHocMa");
+                });
+
+            modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.DmMonHoc", b =>
+                {
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.DmCapHoc", "DmCapHoc")
+                        .WithMany()
+                        .HasForeignKey("DmCapHocMa");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.NamHoc", "NamHoc")
+                        .WithMany()
+                        .HasForeignKey("NamHocMa");
+                });
+
+            modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.DmXa", b =>
+                {
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.DmHuyen", "DmHuyen")
+                        .WithMany()
+                        .HasForeignKey("DmHuyenId");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.DmTinh", "DmTinh")
+                        .WithMany()
+                        .HasForeignKey("DmTinhMa");
+                });
+
+            modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.HocSinh", b =>
+                {
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.PhongGD", "PhongGD")
+                        .WithMany()
+                        .HasForeignKey("PhongGDId");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.SoGD", "SoGD")
+                        .WithMany()
+                        .HasForeignKey("SoGDMa");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.Truong", "Truong")
+                        .WithMany()
+                        .HasForeignKey("TruongId");
+                });
+
+            modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.Lop", b =>
+                {
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.PhongGD", "PhongGD")
+                        .WithMany()
+                        .HasForeignKey("PhongGDId");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.SoGD", "SoGD")
+                        .WithMany()
+                        .HasForeignKey("SoGDMa");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.Truong", "Truong")
+                        .WithMany()
+                        .HasForeignKey("TruongId");
+                });
+
+            modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.NhanSu", b =>
+                {
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.PhongGD", "PhongGD")
+                        .WithMany()
+                        .HasForeignKey("PhongGDId");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.SoGD", "SoGD")
+                        .WithMany()
+                        .HasForeignKey("SoGDMa");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.Truong", "Truong")
+                        .WithMany()
+                        .HasForeignKey("TruongId");
+                });
+
+            modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.PhongGD", b =>
+                {
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.SoGD", "SoGD")
+                        .WithMany()
+                        .HasForeignKey("SoGDMa");
+                });
+
+            modelBuilder.Entity("KnowledgeSpace.BackendServer.Data.Entities.Truong", b =>
+                {
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.PhongGD", "PhongGD")
+                        .WithMany()
+                        .HasForeignKey("PhongGDId");
+
+                    b.HasOne("KnowledgeSpace.BackendServer.Data.Entities.SoGD", "SoGD")
+                        .WithMany()
+                        .HasForeignKey("SoGDMa");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

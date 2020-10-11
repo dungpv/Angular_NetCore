@@ -9,7 +9,7 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string Ma { get; set; }
         public string Ten { get; set; }
         public string TenGoiKhac { get; set; }
-        public int ThuTu { get; set; }
+        public int? ThuTu { get; set; }
 
     }
 }

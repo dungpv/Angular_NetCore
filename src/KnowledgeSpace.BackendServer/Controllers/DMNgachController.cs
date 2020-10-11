@@ -44,7 +44,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 MaNgach = u.p.MaNgach,
                 Ten = u.p.Ten,
                 LoaiNgach = u.p.LoaiNgach,
-                ThuTu = u.p.ThuTu,
+                ThuTu = u.p.ThuTu.Value,
 
             }).ToListAsync();
 

@@ -12,7 +12,7 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string MaSoGD { get; set; }
         public string TenSoGD { get; set; }
         public string Ten { get; set; }
-        public decimal IdPhongGD { get; set; }
+        public decimal? IdPhongGD { get; set; }
         public string MaPhongGD { get; set; }
         public string TenPhongGD { get; set; }
         public decimal? IdTruong { get; set; }
@@ -25,9 +25,9 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string MaCapHoc { get; set; }
         public string MaSoBuoiHocTrenTuan { get; set; }
         public string TenSoBuoiHocTrenTuan { get; set; }
-        public int ThuTu { get; set; }
-        public int TrangThai { get; set; }
-        public int IsLopGhep { get; set; }
+        public int? ThuTu { get; set; }
+        public int? TrangThai { get; set; }
+        public int? IsLopGhep { get; set; }
 
     }
 }

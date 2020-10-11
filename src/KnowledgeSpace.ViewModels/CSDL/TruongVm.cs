@@ -12,7 +12,7 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string MaSoGD { get; set; }
         public string TenSoGD { get; set; }
         public string Ten { get; set; }
-        public decimal IdPhongGD { get; set; }
+        public decimal? IdPhongGD { get; set; }
         public string MaPhongGD { get; set; }
         public string TenPhongGD { get; set; }
         public string MaTinh { get; set; }
@@ -31,12 +31,12 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string Email { get; set; }
         public string Fax { get; set; }
         public string Website { get; set; }
-        public int ThuTu { get; set; }
-        public int IsCapMN { get; set; }
-        public int IsCapTH { get; set; }
-        public int IsCapTHCS { get; set; }
-        public int IsCapTHPT { get; set; }
-        public int IsCapGDTX { get; set; }
+        public int? ThuTu { get; set; }
+        public int? IsCapMN { get; set; }
+        public int? IsCapTH { get; set; }
+        public int? IsCapTHCS { get; set; }
+        public int? IsCapTHPT { get; set; }
+        public int? IsCapGDTX { get; set; }
         public string TenVung { get; set; }
 
     }

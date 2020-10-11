@@ -17,7 +17,7 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
         [Column(TypeName = "nvarchar(50)")]
         public string Ten { get; set; }
 
-        public int ThuTu { get; set; }
+        public int? ThuTu { get; set; }
 
     }
 }

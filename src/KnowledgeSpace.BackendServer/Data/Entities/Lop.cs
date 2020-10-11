@@ -24,7 +24,6 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
         [Required]
         [Column(TypeName = "nvarchar(20)")]
         public string MaSoGD { get; set; }
-        public SoGD SoGD { get; set; }
 
         [MaxLength(50)]
         [Required]
@@ -33,13 +32,11 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
 
         [Column(TypeName = "numeric(18,0)")]
         public decimal? IdPhongGD { get; set; }
-        public PhongGD PhongGD { get; set; }
         [Column(TypeName = "nvarchar(20)")]
         public string MaPhongGD { get; set; }
 
         [Column(TypeName = "numeric(18,0)")]
         public decimal IdTruong { get; set; }
-        public Truong Truong { get; set; }
         [Column(TypeName = "nvarchar(20)")]
         public string MaTruong { get; set; }
 
@@ -55,15 +52,18 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
         [Column(TypeName = "nvarchar(20)")]
         public string MaSoBuoiHocTrenTuan { get; set; }
         public int? IsLopGhep { get; set; }
-        public int TrangThai { get; set; }
+        public int? TrangThai { get; set; }
         public int? ThuTu { get; set; }
 
         [Column(TypeName = "numeric(18,0)")]
-        public decimal NguoiTao { get; set; }
-        public DateTime NgayTao { get; set; }
+        public decimal? NguoiTao { get; set; }
+
+        public DateTime? NgayTao { get; set; }
+
         [Column(TypeName = "numeric(18,0)")]
-        public decimal NguoiSua { get; set; }
-        public DateTime NgaySua { get; set; }
+        public decimal? NguoiSua { get; set; }
+
+        public DateTime? NgaySua { get; set; }
 
     }
 }

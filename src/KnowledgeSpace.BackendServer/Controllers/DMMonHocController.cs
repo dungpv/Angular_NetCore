@@ -40,7 +40,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 Ma = u.p.Ma,
                 Ten = u.p.Ten,
-                ThuTu = u.p.ThuTu,
+                ThuTu = u.p.ThuTu.Value,
                 KieuMonHoc = u.p.KieuMonHoc,
                 IsMonTc = u.p.IsMonTC,
             }).ToListAsync();

@@ -21,12 +21,14 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
         [Column(TypeName = "nvarchar(20)")]
         public string MaNhomTre { get; set; }
 
+        [Column(TypeName = "numeric(18,0)")]
+        public decimal? NguoiTao { get; set; }
+
+        public DateTime? NgayTao { get; set; }
 
         [Column(TypeName = "numeric(18,0)")]
-        public decimal NguoiTao { get; set; }
-        public DateTime NgayTao { get; set; }
-        [Column(TypeName = "numeric(18,0)")]
-        public decimal NguoiSua { get; set; }
-        public DateTime NgaySua { get; set; }
+        public decimal? NguoiSua { get; set; }
+
+        public DateTime? NgaySua { get; set; }
     }
 }

@@ -42,7 +42,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Ma = u.k.Ma,
                 Ten = u.k.Ten,
                 MaLoaiLop = u.k.MaLoaiLop,
-                ThuTu = u.k.ThuTu,
+                ThuTu = u.k.ThuTu.Value,
 
             }).ToListAsync();
 

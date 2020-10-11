@@ -10,6 +10,6 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string MaNgach { get; set; }
         public string Ten { get; set; }
         public string LoaiNgach { get; set; }
-        public int ThuTu { get; set; }
+        public int? ThuTu { get; set; }
     }
 }

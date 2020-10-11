@@ -25,7 +25,5 @@ namespace KnowledgeSpace.BackendServer.Data.Entities
         [Column(TypeName = "numeric(18,0)")]
         public decimal? NguoiSua { get; set; }
         public DateTime? NgaySua { get; set; }
-
-        public ICollection<DmKhoi> DmKhoi { get; set; }
     }
 }
