@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KnowledgeSpace.BackendServer.Authorization;
+using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Helpers;
 using KnowledgeSpace.ViewModels.CSDL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +30,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         [HttpPost]
         [ApiValidationFilter]
+        //[ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.CREATE)]
         public async Task<IActionResult> PostHocSinh([FromBody] HocSinhCreateRequest request)
         {
             _logger.LogInformation("Begin PostHocSinh API");
@@ -133,6 +137,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: GET
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetHocSinhByTruongByNamHoc(decimal? idTruong, int maNamHoc)
         {
             var query = from hs in _context.HocSinh
@@ -180,6 +185,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             return Ok(LopVm);
         }
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(decimal id)
         {
             var HocSinh = await _context.HocSinh.FindAsync(id);

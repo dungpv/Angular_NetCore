@@ -15,3 +15,7 @@ export * from './report.model';
 export * from './monthly-new-comment.model';
 export * from './monthly-new-kb.model';
 export * from './monthly-new-member.model';
+
+export * from './dmtinh.model';
+export * from './dmcumthidua.model';
+export * from './sogd.model';

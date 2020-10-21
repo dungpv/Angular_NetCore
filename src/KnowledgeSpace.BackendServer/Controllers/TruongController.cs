@@ -6,6 +6,7 @@ using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Helpers;
 using KnowledgeSpace.ViewModels.CSDL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -191,6 +192,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
         // URL: GET
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetTruongBySoGDByNamHoc(string maSoGD, int maNamHoc)
         {
             var query = from p in _context.Truong
@@ -238,6 +240,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             return Ok(TruongVm);
         }
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(decimal id)
         {
             var Truong = await _context.Truong.FindAsync(id);

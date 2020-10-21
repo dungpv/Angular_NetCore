@@ -75,10 +75,13 @@ namespace KnowledgeSpace.BackendServer.Data
 
                     new Function {Id = "CONTENT",Name = "Nội dung",ParentId = null,Url = "/contents", Icon="fa-table" },
 
-                    new Function {Id = "CONTENT_CATEGORY",Name = "Danh mục",ParentId ="CONTENT",Url = "/contents/categories" , Icon="fa-edit" },
+                    new Function {Id = "CONTENT_CATEGORY",Name = "Danh mục",ParentId ="CONTENT",SortOrder = 1,Url = "/contents/categories" , Icon="fa-edit" },
                     new Function {Id = "CONTENT_KNOWLEDGEBASE",Name = "Bài viết",ParentId = "CONTENT",SortOrder = 2,Url = "/contents/knowledge-bases", Icon="fa-edit"  },
                     new Function {Id = "CONTENT_COMMENT",Name = "Trang",ParentId = "CONTENT",SortOrder = 3,Url = "/contents/knowledge-bases/comments", Icon="fa-edit"  },
-                    new Function {Id = "CONTENT_REPORT",Name = "Báo xấu",ParentId = "CONTENT",SortOrder = 3,Url = "/contents/knowledge-bases/reports", Icon="fa-edit"  },
+                    new Function {Id = "CONTENT_REPORT",Name = "Báo xấu",ParentId = "CONTENT",SortOrder = 4,Url = "/contents/knowledge-bases/reports", Icon="fa-edit"  },
+
+                    new Function {Id = "CONTENT_SOGD",Name = "Sở Giáo Dục và Đào Tạo",ParentId ="CONTENT",SortOrder = 5,Url = "/contents/sogd" , Icon="fa-edit" },
+                    new Function {Id = "CONTENT_PHONGGD",Name = "Phòng Giáo Dục và Đào Tạo",ParentId ="CONTENT",SortOrder = 6,Url = "/contents/phonggd" , Icon="fa-edit" },
 
                     new Function {Id = "STATISTIC",Name = "Thống kê", ParentId = null, Url = "/statistics", Icon="fa-bar-chart-o" },
 
@@ -92,6 +95,9 @@ namespace KnowledgeSpace.BackendServer.Data
                     new Function {Id = "SYSTEM_ROLE", Name = "Nhóm quyền",ParentId = "SYSTEM",Url = "/systems/roles", Icon="fa-desktop"},
                     new Function {Id = "SYSTEM_FUNCTION", Name = "Chức năng",ParentId = "SYSTEM",Url = "/systems/functions", Icon="fa-desktop"},
                     new Function {Id = "SYSTEM_PERMISSION", Name = "Quyền hạn",ParentId = "SYSTEM",Url = "/systems/permissions", Icon="fa-desktop"},
+
+                    new Function {Id = "CSDL_SOGD",Name = "Sở Giáo Dục và Đào Tạo",ParentId ="CSDL",SortOrder = 1,Url = "/csdl/sogd" , Icon="fa-edit" },
+                    new Function {Id = "CSDL_PHONGGD",Name = "Phòng Giáo Dục và Đào Tạo",ParentId ="CSDL",SortOrder = 2,Url = "/csdl/phonggd" , Icon="fa-edit" },
                 });
                 await _context.SaveChangesAsync();
             }

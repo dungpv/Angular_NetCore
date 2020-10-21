@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Helpers;
 using KnowledgeSpace.ViewModels.CSDL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         // URL: GET
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetDmHuyenByTinhByNamHoc(string maTinh, int maNamHoc)
         {
             var query = from h in _context.DmHuyen

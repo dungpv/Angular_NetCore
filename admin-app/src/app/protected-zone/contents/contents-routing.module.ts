@@ -6,6 +6,7 @@ import { ReportsComponent } from './knowledge-bases/reports/reports.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { AuthGuard } from '@app/shared';
 import { KnowledgeBasesDetailComponent } from './knowledge-bases/knowledge-bases-detail/knowledge-bases-detail.component';
+import { SogdComponent } from './sogd/sogd.component';
 
 const routes: Routes = [
     {
@@ -69,6 +70,14 @@ const routes: Routes = [
         component: ReportsComponent,
         data: {
             functionCode: 'CONTENT_REPORT'
+        },
+        canActivate: [AuthGuard]
+    }, 
+    {
+        path: 'sogd',
+        component: SogdComponent,
+        data: {
+            functionCode: 'CONTENT_SOGD'
         },
         canActivate: [AuthGuard]
     },

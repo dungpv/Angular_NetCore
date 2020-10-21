@@ -11,3 +11,6 @@ export * from './knowledge-bases.service';
 export * from './comments.service';
 export * from './reports.service';
 export * from './statistics.service';
+
+export * from './danhmuc.service';
+export * from './sogd.service';

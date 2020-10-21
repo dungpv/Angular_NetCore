@@ -40,7 +40,7 @@ const routes: Routes = [
                     functionCode: 'STATISTIC'
                 },
                 canActivate: [AuthGuard]
-            },
+            }
         ]
     }
 ];
