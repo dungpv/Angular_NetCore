@@ -35,6 +35,7 @@ import { CommentsDetailComponent } from './knowledge-bases/comments-detail/comme
 import { ReportsComponent } from './knowledge-bases/reports/reports.component';
 import { ReportsDetailComponent } from './knowledge-bases/reports-detail/reports-detail.component';
 import { SogdComponent } from './sogd/sogd.component';
+import { SogdDetailComponent } from './sogd/sogd-detail/sogd-detail.component';
 
 
 @NgModule({
@@ -48,6 +49,7 @@ import { SogdComponent } from './sogd/sogd.component';
     ReportsComponent,
     ReportsDetailComponent,
     SogdComponent,
+    SogdDetailComponent,
   ],
   imports: [
     CommonModule,

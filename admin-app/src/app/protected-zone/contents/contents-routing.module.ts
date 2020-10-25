@@ -7,6 +7,7 @@ import { CategoriesComponent } from './categories/categories.component';
 import { AuthGuard } from '@app/shared';
 import { KnowledgeBasesDetailComponent } from './knowledge-bases/knowledge-bases-detail/knowledge-bases-detail.component';
 import { SogdComponent } from './sogd/sogd.component';
+import { SogdDetailComponent } from './sogd/sogd-detail/sogd-detail.component';
 
 const routes: Routes = [
     {
@@ -80,7 +81,7 @@ const routes: Routes = [
             functionCode: 'CONTENT_SOGD'
         },
         canActivate: [AuthGuard]
-    },
+    }, 
 ];
 
 @NgModule({

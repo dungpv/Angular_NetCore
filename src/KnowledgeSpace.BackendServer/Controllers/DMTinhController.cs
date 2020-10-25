@@ -32,12 +32,28 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Ma = u.Ma,
                 Ten = u.Ten,
                 Cap = u.Cap,
-                ThuTu = u.ThuTu.Value,
+                ThuTu = u.ThuTu.HasValue ? u.ThuTu.Value : 0,
 
             }).ToListAsync();
 
             return Ok(dmTinhVms);
         }
-        
+        // URL: GET: http://localhost:5001/api/DmTinh/{ma}
+        [HttpGet("{ma}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDmTinhByMa(string ma)
+        {
+            var dmTinh = await _context.DmTinh.FindAsync(ma);
+
+            var dmTinhVm = new DMTinhVm()
+            {
+                Ma = dmTinh.Ma,
+                Ten = dmTinh.Ten,
+                Cap = dmTinh.Cap,
+                ThuTu = dmTinh.ThuTu.HasValue ? dmTinh.ThuTu.Value : 0,
+            };
+            return Ok(dmTinhVm);
+        }
+
     }
 }

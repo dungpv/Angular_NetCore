@@ -20,10 +20,18 @@ export class DanhMucService extends BaseService {
                 return response;
             }), catchError(this.handleError));
     }
+    getDMTinhByMa(ma) {
+        return this.http.get<DMTinh>(`${environment.apiUrl}/api/DMTinh/${ma}`, { headers: this._sharedHeaders })
+            .pipe(catchError(this.handleError));
+    }
     getDMCumThiDua() {
         return this.http.get<DMCumThiDua[]>(`${environment.apiUrl}/api/DMCumThiDua`, { headers: this._sharedHeaders })
             .pipe(map((response: DMCumThiDua[]) => {
                 return response;
             }), catchError(this.handleError));
+    }
+    getDMCumThiDuaByMa(ma) {
+        return this.http.get<DMCumThiDua>(`${environment.apiUrl}/api/DMCumThiDua/${ma}`, { headers: this._sharedHeaders })
+            .pipe(catchError(this.handleError));
     }
 }

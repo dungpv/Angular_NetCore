@@ -31,11 +31,25 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 Ma = u.Ma,
                 Ten = u.Ten,
-                ThuTu = u.ThuTu.Value,
+                ThuTu = u.ThuTu.HasValue ? u.ThuTu.Value : 0,
             }).ToListAsync();
 
             return Ok(dmCumThiDuaVms);
         }
-        
+        // URL: GET: http://localhost:5001/api/DMCumThiDua/{ma}
+        [HttpGet("{ma}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDmCumThiDuaByMa(string ma)
+        {
+            var dmCumThiDua = await _context.DmCumThiDua.FindAsync(ma);
+
+            var dmCumThiDuaVm = new DMCumThiDuaVm()
+            {
+                Ma = dmCumThiDua.Ma,
+                Ten = dmCumThiDua.Ten,
+                ThuTu = dmCumThiDua.ThuTu.HasValue ? dmCumThiDua.ThuTu.Value : 0,
+            };
+            return Ok(dmCumThiDuaVm);
+        }
     }
 }

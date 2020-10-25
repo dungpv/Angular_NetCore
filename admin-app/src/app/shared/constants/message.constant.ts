@@ -18,5 +18,6 @@ export class MessageConstants {
     public static NOT_CHOOSE_ANY_RECORD = 'Bạn phải chọn ít nhất một bản ghi.';
     public static UPLOAD_OK_MSG = 'Tải lên thành công';
     public static REQUIRED_ERROR_MSG = 'Dữ liệu không được để trống';
-
+    public static CREATED_NOT_OK_MSG = 'Thêm mới không thành công';
+    public static UPDATED_NOT_OK_MSG = 'Cập nhật không thành công';
 }
