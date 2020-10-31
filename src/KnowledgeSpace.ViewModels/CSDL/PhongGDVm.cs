@@ -6,10 +6,12 @@ namespace KnowledgeSpace.ViewModels.CSDL
 {
     public class PhongGDVm
     {
+        public decimal Id { get; set; }
         public string Ma { get; set; }
         public string Ten { get; set; }
         public string MaSoGD { get; set; }
         public string TenSoGD { get; set; }
+        public string MaTinh { get; set; }
         public string MaHuyen { get; set; }
         public string TenHuyen { get; set; }
         public string DiaChi { get; set; }

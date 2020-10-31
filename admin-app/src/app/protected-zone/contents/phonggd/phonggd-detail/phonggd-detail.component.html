@@ -1,0 +1,147 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left">{{dialogTitle}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form class="form-horizontal form-label-left" novalidate [formGroup]="entityForm">
+    <div class="modal-body div-scroll">
+        <p-panel #pnl header="Thông tin" [toggleable]="true" [collapsed]="false" styleClass="m-b-10">
+            <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid">
+
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Mã:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <input type="text" pInputText  formControlName="ma">
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="ma"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>
+
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Tên:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <input type="text" pInputText  formControlName="ten">
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="ten"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>
+
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Địa chỉ:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <textarea [rows]="3" [cols]="30" pInputTextarea formControlName="diaChi"
+                            rows="3"></textarea>
+                    </div>
+                    <div class="ui-grid-col-4">
+                    </div>
+                </div>
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Điện thoại:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <input type="number" pInputText formControlName="dienThoai">
+                    </div>
+                    <div class="ui-grid-col-4">
+                    </div>
+                </div>
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Email:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <input type="text" pInputText formControlName="email">
+                    </div>
+                    <div class="ui-grid-col-4">
+                    </div>
+                </div>      
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Website:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <input type="text" pInputText formControlName="website">
+                    </div>
+                    <div class="ui-grid-col-4">
+                    </div>
+                </div>                          
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Thứ tự:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <input type="number" pInputText formControlName="thuTu">
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="thuTu"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Sở GD&ĐT:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <p-dropdown [options]="soGD" [style]="{'width':'100%'}" placeholder="Chọn Sở GD&ĐT"
+                            filter="true" [showClear]="true" formControlName="maSoGD">
+                        </p-dropdown>
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="maSoGD"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Tỉnh/ Thành phố:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <select formControlName= "maTinh" (change)= "getHuyenByTinh($event)" class="form-control">
+                            <option value="0">Chọn tỉnh/thành phố</option>
+                            <option [value]= "tinh.ma" *ngFor = "let tinh of dmTinh">{{tinh.ten}}</option>
+                        </select> 
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="maTinh"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Quận/Huyện:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <select formControlName= "maHuyen" class="form-control">
+                            <option value="0">Chọn quận/huyện</option>
+                            <option [value]= "huyen.ma" *ngFor= "let huyen of dmHuyen">{{huyen.ten}}</option>
+                        </select>                                            
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="maHuyen"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>              
+            </div>
+            <p-blockUI [target]="pnl" [blocked]="blockedPanel">
+                <p-progressSpinner [style]="{width: '100px', height: '100px', position:'absolute',top:'25%',left:'50%'}"
+                    strokeWidth="2" animationDuration=".5s"></p-progressSpinner>
+            </p-blockUI>
+        </p-panel>
+    </div>
+    <div class="modal-footer">
+        <button type="button" (click)="saveChange()" class="btn btn-primary">Lưu lại</button>
+        &nbsp;
+        <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Đóng</button>
+    </div>
+</form>

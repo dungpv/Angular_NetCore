@@ -33,7 +33,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 query = query.Where(x => x.h.MaTinh == maTinh);
             }
-
+            
             query = query.Where(x => x.h.MaNamHoc == maNamHoc);
             if (query == null)
                 return NotFound(new ApiNotFoundResponse($"DMHuyen with maTinh: {maTinh} is not found"));
@@ -46,12 +46,30 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Ma = u.h.Ma,
                 Ten = u.h.Ten,
                 Cap = u.h.Cap,
-                ThuTu = u.h.ThuTu.Value,
+                ThuTu = u.h.ThuTu.HasValue ? u.h.ThuTu.Value : 0,
 
             }).ToListAsync();
 
             return Ok(dmHuyenVms);
         }
-        
+        // URL: GET: http://localhost:5001/api/DmHuyen/?quer
+        [HttpGet("filter")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDmHuyenByMa(string ma, int maNamHoc)
+        {
+            var dmHuyen = _context.DmHuyen.Where(x => x.Ma == ma && x.MaNamHoc == maNamHoc);
+
+            var dmHuyenVm = await dmHuyen.Select(u => new DMHuyenVm()
+            {
+                MaNamHoc = u.MaNamHoc,
+                MaTinh = u.MaTinh,
+                TenTinh = u.Ten,
+                Ma = u.Ma,
+                Ten = u.Ten,
+                Cap = u.Cap,
+                ThuTu = u.ThuTu.HasValue ? u.ThuTu.Value : 0,
+            }).ToListAsync();
+            return Ok(dmHuyenVm);
+        }
     }
 }

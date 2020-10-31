@@ -7,7 +7,7 @@ import { CategoriesComponent } from './categories/categories.component';
 import { AuthGuard } from '@app/shared';
 import { KnowledgeBasesDetailComponent } from './knowledge-bases/knowledge-bases-detail/knowledge-bases-detail.component';
 import { SogdComponent } from './sogd/sogd.component';
-import { SogdDetailComponent } from './sogd/sogd-detail/sogd-detail.component';
+import { PhonggdComponent } from './phonggd/phonggd.component';
 
 const routes: Routes = [
     {
@@ -79,6 +79,14 @@ const routes: Routes = [
         component: SogdComponent,
         data: {
             functionCode: 'CONTENT_SOGD'
+        },
+        canActivate: [AuthGuard]
+    }, 
+    {
+        path: 'phonggd',
+        component: PhonggdComponent,
+        data: {
+            functionCode: 'CONTENT_PHONGGD'
         },
         canActivate: [AuthGuard]
     }, 

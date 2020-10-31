@@ -19,3 +19,6 @@ export * from './monthly-new-member.model';
 export * from './dmtinh.model';
 export * from './dmcumthidua.model';
 export * from './sogd.model';
+export * from './phonggd.model';
+export * from './dmhuyen.model';
+

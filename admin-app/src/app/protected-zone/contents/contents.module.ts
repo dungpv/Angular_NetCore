@@ -36,6 +36,8 @@ import { ReportsComponent } from './knowledge-bases/reports/reports.component';
 import { ReportsDetailComponent } from './knowledge-bases/reports-detail/reports-detail.component';
 import { SogdComponent } from './sogd/sogd.component';
 import { SogdDetailComponent } from './sogd/sogd-detail/sogd-detail.component';
+import { PhonggdComponent } from './phonggd/phonggd.component';
+import { PhonggdDetailComponent } from './phonggd/phonggd-detail/phonggd-detail.component';
 
 
 @NgModule({
@@ -50,6 +52,8 @@ import { SogdDetailComponent } from './sogd/sogd-detail/sogd-detail.component';
     ReportsDetailComponent,
     SogdComponent,
     SogdDetailComponent,
+    PhonggdComponent,
+    PhonggdDetailComponent,
   ],
   imports: [
     CommonModule,

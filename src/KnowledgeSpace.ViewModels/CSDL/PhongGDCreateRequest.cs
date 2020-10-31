@@ -10,6 +10,7 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string Ma { get; set; }
         public string Ten { get; set; }
         public string MaSoGD { get; set; }
+        public string MaTinh { get; set; }
         public string MaHuyen { get; set; }
         public string DiaChi { get; set; }
         public string DienThoai { get; set; }

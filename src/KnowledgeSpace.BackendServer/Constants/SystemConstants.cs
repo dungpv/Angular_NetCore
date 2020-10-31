@@ -16,5 +16,11 @@ namespace KnowledgeSpace.BackendServer.Constants
         {
             public const string Admin = "Admin";
         }
+
+        public class NamHoc
+        {
+            public const int MaNamHoc = 2019;
+            public const string TenNamHoc = "2019-2020";
+        }
     }
 }
