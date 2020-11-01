@@ -15,6 +15,7 @@ namespace KnowledgeSpace.BackendServer.Constants
         CONTENT_COMMENT,
         CONTENT_REPORT,
         CONTENT_PHONGGD,
+        CONTENT_TRUONG,
 
         STATISTIC,
         STATISTIC_MONTHLY_NEWMEMBER,

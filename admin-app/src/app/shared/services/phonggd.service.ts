@@ -22,7 +22,12 @@ export class PhonggdService extends BaseService {
         return this.http.put(`${environment.apiUrl}/api/Phonggd/${id}`, JSON.stringify(entity), { headers: this._sharedHeaders })
             .pipe(catchError(this.handleError));
     }
-
+    delete(id) {
+        return this.http.delete(environment.apiUrl + '/api/Phonggd/' + id, { headers: this._sharedHeaders })
+            .pipe(
+                catchError(this.handleError)
+            );
+    }
     getAllPaging(filter, pageIndex, pageSize, maSoGD) {
         return this.http.get<Pagination<Phonggd>>(`${environment.apiUrl}/api/Phonggd/filter?pageIndex=${pageIndex}&pageSize=${pageSize}&filter=${filter}&maSoGD=${maSoGD}&maNamHoc=2019`, { headers: this._sharedHeaders })
             .pipe(map((response: Pagination<Phonggd>) => {

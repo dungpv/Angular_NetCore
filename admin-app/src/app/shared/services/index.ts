@@ -15,3 +15,4 @@ export * from './statistics.service';
 export * from './danhmuc.service';
 export * from './sogd.service';
 export * from './phonggd.service';
+export * from './truong.service';

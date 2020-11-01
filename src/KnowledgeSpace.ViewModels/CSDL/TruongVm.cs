@@ -37,7 +37,6 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public int? IsCapTHCS { get; set; }
         public int? IsCapTHPT { get; set; }
         public int? IsCapGDTX { get; set; }
-        public string TenVung { get; set; }
 
     }
 }

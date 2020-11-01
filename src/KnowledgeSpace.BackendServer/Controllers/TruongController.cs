@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KnowledgeSpace.BackendServer.Authorization;
+using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Helpers;
+using KnowledgeSpace.ViewModels;
 using KnowledgeSpace.ViewModels.CSDL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +30,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
 
         [HttpPost]
-        [ApiValidationFilter]
+        [ClaimRequirement(FunctionCode.CONTENT_TRUONG, CommandCode.CREATE)]
         public async Task<IActionResult> PostTruong([FromBody] TruongCreateRequest request)
         {
             _logger.LogInformation("Begin PostTruong API");
@@ -35,7 +38,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var dbTruong = await _context.Truong.FindAsync(request.Id);
             if (dbTruong != null)
                 return BadRequest(new ApiBadRequestResponse($"Truong with id {request.Id} is existed."));
-
+            request.MaNamHoc = SystemConstants.NamHoc.MaNamHoc;
             decimal? idHuyen = null;
             if(string.IsNullOrEmpty(request.MaHuyen))
                  idHuyen = _context.DmHuyen.Where(h => h.Ma == request.MaHuyen && h.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id;
@@ -71,6 +74,11 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 TruongDetail.MaPhongGD = request.MaPhongGD;
                 TruongDetail.IdPhongGD = idPhongGd;
             }
+            else
+            {
+                TruongDetail.MaPhongGD = null;
+                TruongDetail.IdPhongGD = null;
+            }    
 
             TruongDetail.Ma = request.Ma;
             TruongDetail.MaNamHoc = request.MaNamHoc;
@@ -112,13 +120,14 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
 
         [HttpPut("{id}")]
+        [ClaimRequirement(FunctionCode.CONTENT_TRUONG, CommandCode.UPDATE)]
         public async Task<IActionResult> PutTruong(string id, [FromBody] TruongCreateRequest request)
         {
             _logger.LogInformation("Begin PutTruong API");
             var Truong = await _context.Truong.FindAsync(id);
             if (Truong == null)
                 return NotFound(new ApiNotFoundResponse($"Cannot found Truong with id {id}"));
-
+            request.MaNamHoc = SystemConstants.NamHoc.MaNamHoc;
             decimal? idHuyen = null;
             if (string.IsNullOrEmpty(request.MaHuyen))
                 idHuyen = _context.DmHuyen.Where(h => h.Ma == request.MaHuyen && h.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id;
@@ -152,6 +161,11 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Truong.MaPhongGD = Truong.MaPhongGD;
                 Truong.IdPhongGD = idPhongGd;
             }
+            else
+            {
+                Truong.MaPhongGD = null;
+                Truong.IdPhongGD = null;
+            }
 
             Truong.Ma = request.Ma;
             Truong.MaNamHoc = request.MaNamHoc;
@@ -171,7 +185,6 @@ namespace KnowledgeSpace.BackendServer.Controllers
             Truong.Website = request.Website;
             Truong.ThuTu = request.ThuTu;
             Truong.TrangThai = request.TrangThai;
-            Truong.MaVung = request.MaVung;
             Truong.NgaySua = DateTime.Now;
             Truong.NguoiSua = request.NguoiTao.Value;
 
@@ -214,7 +227,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 MaSoGD = u.s.Ma,
                 TenSoGD = u.s.Ten,
                 MaPhongGD = u.p.MaPhongGD,
-                IdPhongGD = u.p.IdPhongGD.Value,
+                IdPhongGD = u.p.IdPhongGD.HasValue ? u.p.IdPhongGD.Value : 0,
                 TenPhongGD = (_context.PhongGD.Where(x => x.Id == u.p.IdPhongGD).FirstOrDefault().Ten),
                 MaTinh = u.p.MaTinh,
                 TenTinh = (_context.DmTinh.Where(x => x.Ma == u.p.MaTinh).FirstOrDefault().Ten),
@@ -232,12 +245,85 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Email = u.p.Email,
                 Fax = u.p.Fax,
                 Website = u.p.Website,
-                TenVung = u.v.Ten,
-                ThuTu = u.p.ThuTu.Value,
+                ThuTu = u.p.ThuTu.HasValue ? u.p.ThuTu.Value : 0,
 
             }).ToListAsync();
 
             return Ok(TruongVm);
+        }
+        // URL: GET: http://localhost:5001/api/PhongGd/?quer
+        [HttpGet("filter")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetTruongPaging(string filter, int pageIndex, int pageSize, string maSoGD, int maNamHoc, string maCapHoc)
+        {
+            var query = from t in _context.Truong
+                        join s in _context.SoGD on t.MaSoGD equals s.Ma
+                        join h in _context.DmHuyen on new { A = t.MaHuyen, B = t.MaNamHoc } equals new { A = h.Ma, B = h.MaNamHoc }
+                        join v in _context.DmVung on new { A = t.MaVung } equals new { A = v.Ma }
+                        select new { t, s, h, v };
+            if (!string.IsNullOrEmpty(filter))
+            {
+                query = query.Where(x => x.t.Ten.Contains(filter));
+            }
+            if (!string.IsNullOrEmpty(maSoGD))
+            {
+                query = query.Where(x => x.t.MaSoGD == maSoGD);
+            }
+            if(maCapHoc == SysCapHoc.MamNon)
+                query = query.Where(x => x.t.IsCapMN == 1);
+            if (maCapHoc == SysCapHoc.C1)
+                query = query.Where(x => x.t.IsCapTH == 1);
+            if (maCapHoc == SysCapHoc.C2)
+                query = query.Where(x => x.t.IsCapTHCS == 1);
+            if (maCapHoc == SysCapHoc.C3)
+                query = query.Where(x => x.t.IsCapTHPT == 1);
+            if (maCapHoc == SysCapHoc.GDTX)
+                query = query.Where(x => x.t.IsCapGDTX == 1);
+
+            query = query.Where(x => x.t.MaNamHoc == maNamHoc);
+            var totalRecords = await query.CountAsync();
+            var items = await query.Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .Select(u => new TruongVm()
+                {
+                    Ma = u.t.Ma,
+                    Ten = u.t.Ten,
+                    MaSoGD = u.t.Ma,
+                    TenSoGD = u.s.Ten,
+                    MaPhongGD = u.t.MaPhongGD,
+                    IdPhongGD = u.t.IdPhongGD.HasValue ? u.t.IdPhongGD.Value : 0,
+                    TenPhongGD = !string.IsNullOrEmpty(u.t.MaPhongGD) ?  (_context.PhongGD.Where(x => x.Id == u.t.IdPhongGD).FirstOrDefault().Ten) : "",
+                    MaTinh = u.t.MaTinh,
+                    TenTinh = !string.IsNullOrEmpty(u.t.MaTinh) ?  (_context.DmTinh.Where(x => x.Ma == u.t.MaTinh).FirstOrDefault().Ten) : "",
+                    MaLoaiHinh = u.t.MaLoaiHinh,
+                    TenLoaiHinh = !string.IsNullOrEmpty(u.t.MaLoaiHinh) ? (_context.DmLoaiHinh.Where(x => x.Ma == u.t.MaLoaiHinh && x.MaNamHoc == u.t.MaNamHoc).FirstOrDefault().Ten) : "",
+                    MaLoaiTruong = u.t.MaLoaiTruong,
+                    TenLoaiTruong = !string.IsNullOrEmpty(u.t.MaLoaiTruong) ? (_context.DmLoaiTruong.Where(x => x.Ma == u.t.MaLoaiTruong).FirstOrDefault().Ten) : "",
+                    MaNhomCapHoc = u.t.MaNhomCapHoc,
+                    TenNhomCapHoc = !string.IsNullOrEmpty(u.t.MaNhomCapHoc) ? (_context.DmNhomCapHoc.Where(x => x.Ma == u.t.MaNhomCapHoc).FirstOrDefault().Ten) : "",
+                    MaHuyen = u.h.Ma,
+                    TenHuyen = u.h.Ten,
+                    DsCapHoc = u.t.DSCapHoc,
+                    DiaChi = u.t.DiaChi,
+                    DienThoai = u.t.DienThoai,
+                    Email = u.t.Email,
+                    Fax = u.t.Fax,
+                    Website = u.t.Website,
+                    ThuTu = u.t.ThuTu.HasValue ? u.t.ThuTu.Value : 0,
+                    IsCapMN = u.t.IsCapMN,
+                    IsCapTH = u.t.IsCapTH,
+                    IsCapTHCS = u.t.IsCapTHCS,
+                    IsCapTHPT = u.t.IsCapTHPT,
+                    IsCapGDTX = u.t.IsCapGDTX,
+                })
+                .ToListAsync();
+
+            var pagination = new Pagination<TruongVm>
+            {
+                Items = items,
+                TotalRecords = totalRecords,
+            };
+            return Ok(pagination);
         }
         [HttpGet("{id}")]
         [AllowAnonymous]
@@ -252,31 +338,59 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Ma = Truong.Ma,
                 Ten = Truong.Ten,
                 MaSoGD = Truong.MaSoGD,
-                TenSoGD = (_context.SoGD.Where(x => x.Ma == Truong.MaPhongGD).FirstOrDefault().Ten),
+                TenSoGD = !string.IsNullOrEmpty(Truong.MaSoGD) ? (_context.SoGD.Where(x => x.Ma == Truong.MaSoGD).FirstOrDefault().Ten) : "",
                 MaPhongGD = Truong.MaPhongGD,
-                IdPhongGD = Truong.IdPhongGD.Value,
-                TenPhongGD = (_context.PhongGD.Where(x => x.Id == Truong.IdPhongGD).FirstOrDefault().Ten),
+                IdPhongGD = Truong.IdPhongGD.HasValue ? Truong.IdPhongGD.Value : 0 ,
+                TenPhongGD = !string.IsNullOrEmpty(Truong.MaPhongGD) ? (_context.PhongGD.Where(x => x.Id == Truong.IdPhongGD).FirstOrDefault().Ten) : "",
                 MaTinh = Truong.MaTinh,
-                TenTinh = (_context.DmTinh.Where(x => x.Ma == Truong.MaTinh).FirstOrDefault().Ten),
+                TenTinh = !string.IsNullOrEmpty(Truong.MaSoGD) ? (_context.DmTinh.Where(x => x.Ma == Truong.MaTinh).FirstOrDefault().Ten) : "",
                 MaLoaiHinh = Truong.MaLoaiHinh,
-                TenLoaiHinh = (_context.DmLoaiHinh.Where(x => x.Ma == Truong.MaLoaiHinh && x.MaNamHoc == Truong.MaNamHoc).FirstOrDefault().Ten),
+                TenLoaiHinh = !string.IsNullOrEmpty(Truong.MaLoaiHinh) ? (_context.DmLoaiHinh.Where(x => x.Ma == Truong.MaLoaiHinh && x.MaNamHoc == Truong.MaNamHoc).FirstOrDefault().Ten) : "",
                 MaLoaiTruong = Truong.MaLoaiTruong,
-                TenLoaiTruong = (_context.DmLoaiTruong.Where(x => x.Ma == Truong.MaLoaiTruong).FirstOrDefault().Ten),
+                TenLoaiTruong = !string.IsNullOrEmpty(Truong.MaLoaiTruong) ? (_context.DmLoaiTruong.Where(x => x.Ma == Truong.MaLoaiTruong).FirstOrDefault().Ten) : "",
                 MaNhomCapHoc = Truong.MaNhomCapHoc,
-                TenNhomCapHoc = (_context.DmNhomCapHoc.Where(x => x.Ma == Truong.MaNhomCapHoc).FirstOrDefault().Ten),
+                TenNhomCapHoc = !string.IsNullOrEmpty(Truong.MaNhomCapHoc) ? (_context.DmNhomCapHoc.Where(x => x.Ma == Truong.MaNhomCapHoc).FirstOrDefault().Ten) : "",
                 MaHuyen = Truong.MaHuyen,
-                TenHuyen = (_context.DmHuyen.Where(x => x.Ma == Truong.MaHuyen && x.MaNamHoc == Truong.MaNamHoc).FirstOrDefault().Ten),
+                TenHuyen = !string.IsNullOrEmpty(Truong.MaHuyen) ? (_context.DmHuyen.Where(x => x.Ma == Truong.MaHuyen && x.MaNamHoc == Truong.MaNamHoc).FirstOrDefault().Ten) : "",
                 DsCapHoc = Truong.DSCapHoc,
                 DiaChi = Truong.DiaChi,
                 DienThoai = Truong.DienThoai,
                 Email = Truong.Email,
                 Fax = Truong.Fax,
                 Website = Truong.Website,
-                TenVung = (_context.DmVung.Where(x => x.Ma == Truong.MaVung).FirstOrDefault().Ten),
-                ThuTu = Truong.ThuTu.Value,
+                ThuTu = Truong.ThuTu.HasValue ? Truong.ThuTu.Value : 0,
+                IsCapMN = Truong.IsCapMN,
+                IsCapTH = Truong.IsCapTH,
+                IsCapTHCS = Truong.IsCapTHCS,
+                IsCapTHPT = Truong.IsCapTHPT,
+                IsCapGDTX = Truong.IsCapGDTX,
             };
             return Ok(TruongVm);
         }
+        // URL: DELETE: http://localhost:5001/api/Category/{id}
+        [HttpDelete("{id}")]
+        [ClaimRequirement(FunctionCode.CONTENT_TRUONG, CommandCode.DELETE)]
+        public async Task<IActionResult> DeleteTruong(decimal id)
+        {
+            var truong = await _context.Truong.FindAsync(id);
+            if (truong == null)
+                return NotFound();
 
+            _context.Truong.Remove(truong);
+            var result = await _context.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                var truongVm = new TruongVm()
+                {
+                    Id = truong.Id,
+                    Ma = truong.Ma,
+                    Ten = truong.Ten,
+                    MaTinh = truong.MaTinh,
+                };
+                return Ok(truongVm);
+            }
+            return BadRequest();
+        }
     }
 }

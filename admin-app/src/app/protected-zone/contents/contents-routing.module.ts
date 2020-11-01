@@ -8,6 +8,7 @@ import { AuthGuard } from '@app/shared';
 import { KnowledgeBasesDetailComponent } from './knowledge-bases/knowledge-bases-detail/knowledge-bases-detail.component';
 import { SogdComponent } from './sogd/sogd.component';
 import { PhonggdComponent } from './phonggd/phonggd.component';
+import { TruongComponent } from './truong/truong.component';
 
 const routes: Routes = [
     {
@@ -90,6 +91,14 @@ const routes: Routes = [
         },
         canActivate: [AuthGuard]
     }, 
+    {
+        path: 'truong',
+        component: TruongComponent,
+        data: {
+            functionCode: 'CONTENT_TRUONG'
+        },
+        canActivate: [AuthGuard]
+    }
 ];
 
 @NgModule({

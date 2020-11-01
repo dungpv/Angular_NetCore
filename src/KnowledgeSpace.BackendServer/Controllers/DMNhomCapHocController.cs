@@ -45,6 +45,20 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             return Ok(dmNhomCapHocVms);
         }
-        
+        [HttpGet("{ma}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDmNhomCapHocByMa(string ma)
+        {
+            var dmNhomCapHoc = await _context.DmNhomCapHoc.FindAsync(ma);
+
+            var dmNhomCapHochVm = new DMNhomCapHocVm()
+            {
+                Ma = dmNhomCapHoc.Ma,
+                Ten = dmNhomCapHoc.Ten,
+                DsCap = dmNhomCapHoc.DSCap,
+                Cap = dmNhomCapHoc.Cap,
+            };
+            return Ok(dmNhomCapHochVm);
+        }
     }
 }

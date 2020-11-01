@@ -52,6 +52,19 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             return Ok(dmLoaiTruongVms);
         }
-        
+        [HttpGet("{ma}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDmLoaiTruongByMa(string ma)
+        {
+            var dmLoaiTruong = await _context.DmLoaiTruong.FindAsync(ma);
+
+            var dmLoaiTruonghVm = new DMLoaiTruongVm()
+            {
+                Ma = dmLoaiTruong.Ma,
+                Ten = dmLoaiTruong.Ten,
+                ThuTu = dmLoaiTruong.ThuTu.HasValue ? dmLoaiTruong.ThuTu.Value : 0,
+            };
+            return Ok(dmLoaiTruonghVm);
+        }
     }
 }

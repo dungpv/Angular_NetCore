@@ -24,7 +24,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         // URL: GET
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetDmLoaiHinhByNamHocByCapHoc(int maNamHoc, string maCapHoc)
+        public async Task<IActionResult> GetDmLoaiHinhByCapHoc(int maNamHoc, string maCapHoc)
         {
             var query  = from p in _context.DmLoaiHinh
                                 select new { p };
@@ -57,6 +57,20 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             return Ok(dmLoaiHinhVms);
         }
-        
+        [HttpGet("{ma}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDmLoaiHinhByMa(string ma)
+        {
+            var dmLoaiHinh = await _context.DmLoaiHinh.FindAsync(ma);
+
+            var dmLoaiHinhhVm = new DMLoaiHinhVm()
+            {
+                MaNamHoc = dmLoaiHinh.MaNamHoc,
+                Ma = dmLoaiHinh.Ma,
+                Ten = dmLoaiHinh.Ten,
+                ThuTu = dmLoaiHinh.ThuTu.HasValue ? dmLoaiHinh.ThuTu.Value : 0,
+            };
+            return Ok(dmLoaiHinhhVm);
+        }
     }
 }

@@ -21,4 +21,7 @@ export * from './dmcumthidua.model';
 export * from './sogd.model';
 export * from './phonggd.model';
 export * from './dmhuyen.model';
+export * from './base-danhmuc.model';
+export * from './dmnhomcaphoc.model';
+export * from './truong.model';
 

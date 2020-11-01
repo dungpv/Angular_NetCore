@@ -38,7 +38,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var dbPhongGD = await _context.PhongGD.FindAsync(request.Id);
             if (dbPhongGD != null)
                 return BadRequest(new ApiBadRequestResponse($"PhongGD with id {request.Id} is existed."));
-
+            request.MaNamHoc = SystemConstants.NamHoc.MaNamHoc;
             decimal idHuyen = _context.DmHuyen.Where(h => h.Ma == request.MaHuyen && h.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id;
 
             var phongGD = new PhongGD()
