@@ -41,7 +41,7 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
             if (request.MaCapHoc == SysCapHoc.MamNon || request.MaCapHoc == SysCapHoc.C1 || request.MaCapHoc == SysCapHoc.C2)
             {
                 decimal? idPhongGd = null;
-                if (string.IsNullOrEmpty(request.MaPhongGD))
+                if (!string.IsNullOrEmpty(request.MaPhongGD))
                     idPhongGd = _context.PhongGD.Where(p => p.Ma == request.MaPhongGD && p.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id; ;
 
                 LopDetail.MaPhongGD = request.MaPhongGD;
@@ -92,7 +92,7 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
             if (request.MaCapHoc == SysCapHoc.MamNon || request.MaCapHoc == SysCapHoc.C1 || request.MaCapHoc == SysCapHoc.C2)
             {
                 decimal? idPhongGd = null;
-                if (string.IsNullOrEmpty(request.MaPhongGD))
+                if (!string.IsNullOrEmpty(request.MaPhongGD))
                     idPhongGd = _context.PhongGD.Where(p => p.Ma == request.MaPhongGD && p.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id; ;
 
                 Lop.MaPhongGD = request.MaPhongGD;

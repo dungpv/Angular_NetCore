@@ -26,6 +26,7 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string MaNhomCapHoc { get; set; }
         public string TenNhomCapHoc { get; set; }
         public string DsCapHoc { get; set; }
+        public string MaCapHoc { get; set; }
         public string DiaChi { get; set; }
         public string DienThoai { get; set; }
         public string Email { get; set; }

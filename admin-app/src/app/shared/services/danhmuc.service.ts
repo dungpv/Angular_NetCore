@@ -61,7 +61,7 @@ export class DanhMucService extends BaseService {
         return this.http.get<BaseDanhMuc>(`${environment.apiUrl}/api/DMCapHoc/${ma}`, { headers: this._sharedHeaders })
             .pipe(catchError(this.handleError));
     }
-    getDMLoaiHinh(maCapHoc) {
+    getDMLoaiHinh(maCapHoc=null) {
         return this.http.get<BaseDanhMuc[]>(`${environment.apiUrl}/api/DMLoaiHinh?maNamHoc=${SystemConstants.MA_NAM_HOC}&maCapHoc=${maCapHoc}`, { headers: this._sharedHeaders })
             .pipe(map((response: BaseDanhMuc[]) => {
                 return response;
@@ -71,7 +71,7 @@ export class DanhMucService extends BaseService {
         return this.http.get<BaseDanhMuc>(`${environment.apiUrl}/api/DMLoaiHinh/${ma}`, { headers: this._sharedHeaders })
             .pipe(catchError(this.handleError));
     }
-    getDMLoaiTruong(maCapHoc) {
+    getDMLoaiTruong(maCapHoc=null) {
         return this.http.get<BaseDanhMuc[]>(`${environment.apiUrl}/api/DMLoaiTruong?maCapHoc=${maCapHoc}`, { headers: this._sharedHeaders })
             .pipe(map((response: BaseDanhMuc[]) => {
                 return response;
@@ -81,7 +81,7 @@ export class DanhMucService extends BaseService {
         return this.http.get<BaseDanhMuc>(`${environment.apiUrl}/api/DMLoaiTruong/${ma}`, { headers: this._sharedHeaders })
             .pipe(catchError(this.handleError));
     }
-    getDMNhomCapHoc(maCapHoc) {
+    getDMNhomCapHoc(maCapHoc='') {
         return this.http.get<DMNhomCapHoc[]>(`${environment.apiUrl}/api/DMNhomCapHoc?maCapHoc=${maCapHoc}`, { headers: this._sharedHeaders })
             .pipe(map((response: DMNhomCapHoc[]) => {
                 return response;

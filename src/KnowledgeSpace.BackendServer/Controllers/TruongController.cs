@@ -40,7 +40,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 return BadRequest(new ApiBadRequestResponse($"Truong with id {request.Id} is existed."));
             request.MaNamHoc = SystemConstants.NamHoc.MaNamHoc;
             decimal? idHuyen = null;
-            if(string.IsNullOrEmpty(request.MaHuyen))
+            if(!string.IsNullOrEmpty(request.MaHuyen))
                  idHuyen = _context.DmHuyen.Where(h => h.Ma == request.MaHuyen && h.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id;
 
             var TruongDetail = new Truong() { };
@@ -68,7 +68,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             if (cap_hoc == SysCapHoc.MamNon || cap_hoc == SysCapHoc.C1 || cap_hoc == SysCapHoc.C2)
             {
                 decimal? idPhongGd = null;
-                if (string.IsNullOrEmpty(request.MaPhongGD))
+                if (!string.IsNullOrEmpty(request.MaPhongGD))
                     idPhongGd = _context.PhongGD.Where(p => p.Ma == request.MaPhongGD && p.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id; ;
 
                 TruongDetail.MaPhongGD = request.MaPhongGD;
@@ -100,7 +100,6 @@ namespace KnowledgeSpace.BackendServer.Controllers
             TruongDetail.TrangThai = request.TrangThai;
             TruongDetail.MaVung = request.MaVung;
             TruongDetail.NgayTao = DateTime.Now;
-            TruongDetail.NguoiTao = request.NguoiTao.Value;
 
             _context.Truong.Add(TruongDetail);
             var result = await _context.SaveChangesAsync();
@@ -121,7 +120,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         [HttpPut("{id}")]
         [ClaimRequirement(FunctionCode.CONTENT_TRUONG, CommandCode.UPDATE)]
-        public async Task<IActionResult> PutTruong(string id, [FromBody] TruongCreateRequest request)
+        public async Task<IActionResult> PutTruong(decimal id, [FromBody] TruongCreateRequest request)
         {
             _logger.LogInformation("Begin PutTruong API");
             var Truong = await _context.Truong.FindAsync(id);
@@ -129,7 +128,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 return NotFound(new ApiNotFoundResponse($"Cannot found Truong with id {id}"));
             request.MaNamHoc = SystemConstants.NamHoc.MaNamHoc;
             decimal? idHuyen = null;
-            if (string.IsNullOrEmpty(request.MaHuyen))
+            if (!string.IsNullOrEmpty(request.MaHuyen))
                 idHuyen = _context.DmHuyen.Where(h => h.Ma == request.MaHuyen && h.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id;
 
             //check cấp dựa vào mã nhóm cấp
@@ -155,7 +154,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             if (cap_hoc == SysCapHoc.MamNon || cap_hoc == SysCapHoc.C1 || cap_hoc == SysCapHoc.C2)
             {
                 decimal? idPhongGd = null;
-                if (string.IsNullOrEmpty(request.MaPhongGD))
+                if (!string.IsNullOrEmpty(request.MaPhongGD))
                     idPhongGd = _context.PhongGD.Where(p => p.Ma == request.MaPhongGD && p.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id; ;
 
                 Truong.MaPhongGD = Truong.MaPhongGD;
@@ -186,7 +185,6 @@ namespace KnowledgeSpace.BackendServer.Controllers
             Truong.ThuTu = request.ThuTu;
             Truong.TrangThai = request.TrangThai;
             Truong.NgaySua = DateTime.Now;
-            Truong.NguoiSua = request.NguoiTao.Value;
 
             _context.Truong.Update(Truong);
             var result = await _context.SaveChangesAsync();
@@ -237,6 +235,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 TenLoaiTruong = (_context.DmLoaiTruong.Where(x => x.Ma == u.p.MaLoaiTruong).FirstOrDefault().Ten),
                 MaNhomCapHoc = u.p.MaNhomCapHoc,
                 TenNhomCapHoc = (_context.DmNhomCapHoc.Where(x => x.Ma == u.p.MaNhomCapHoc).FirstOrDefault().Ten),
+                MaCapHoc = (_context.DmNhomCapHoc.Where(x => x.Ma == u.p.MaNhomCapHoc).FirstOrDefault().Cap),
                 MaHuyen = u.h.Ma,
                 TenHuyen = u.h.Ten,
                 DsCapHoc = u.p.DSCapHoc,
@@ -286,6 +285,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 .Take(pageSize)
                 .Select(u => new TruongVm()
                 {
+                    Id = u.t.Id,
                     Ma = u.t.Ma,
                     Ten = u.t.Ten,
                     MaSoGD = u.t.Ma,
@@ -301,6 +301,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                     TenLoaiTruong = !string.IsNullOrEmpty(u.t.MaLoaiTruong) ? (_context.DmLoaiTruong.Where(x => x.Ma == u.t.MaLoaiTruong).FirstOrDefault().Ten) : "",
                     MaNhomCapHoc = u.t.MaNhomCapHoc,
                     TenNhomCapHoc = !string.IsNullOrEmpty(u.t.MaNhomCapHoc) ? (_context.DmNhomCapHoc.Where(x => x.Ma == u.t.MaNhomCapHoc).FirstOrDefault().Ten) : "",
+                    MaCapHoc = !string.IsNullOrEmpty(u.t.MaNhomCapHoc) ? (_context.DmNhomCapHoc.Where(x => x.Ma == u.t.MaNhomCapHoc).FirstOrDefault().Cap) : "",
                     MaHuyen = u.h.Ma,
                     TenHuyen = u.h.Ten,
                     DsCapHoc = u.t.DSCapHoc,
@@ -335,23 +336,18 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             var TruongVm = new TruongVm()
             {
+                Id = Truong.Id,
                 Ma = Truong.Ma,
                 Ten = Truong.Ten,
                 MaSoGD = Truong.MaSoGD,
-                TenSoGD = !string.IsNullOrEmpty(Truong.MaSoGD) ? (_context.SoGD.Where(x => x.Ma == Truong.MaSoGD).FirstOrDefault().Ten) : "",
                 MaPhongGD = Truong.MaPhongGD,
-                IdPhongGD = Truong.IdPhongGD.HasValue ? Truong.IdPhongGD.Value : 0 ,
-                TenPhongGD = !string.IsNullOrEmpty(Truong.MaPhongGD) ? (_context.PhongGD.Where(x => x.Id == Truong.IdPhongGD).FirstOrDefault().Ten) : "",
+                IdPhongGD = Truong.IdPhongGD,
                 MaTinh = Truong.MaTinh,
-                TenTinh = !string.IsNullOrEmpty(Truong.MaSoGD) ? (_context.DmTinh.Where(x => x.Ma == Truong.MaTinh).FirstOrDefault().Ten) : "",
                 MaLoaiHinh = Truong.MaLoaiHinh,
-                TenLoaiHinh = !string.IsNullOrEmpty(Truong.MaLoaiHinh) ? (_context.DmLoaiHinh.Where(x => x.Ma == Truong.MaLoaiHinh && x.MaNamHoc == Truong.MaNamHoc).FirstOrDefault().Ten) : "",
                 MaLoaiTruong = Truong.MaLoaiTruong,
-                TenLoaiTruong = !string.IsNullOrEmpty(Truong.MaLoaiTruong) ? (_context.DmLoaiTruong.Where(x => x.Ma == Truong.MaLoaiTruong).FirstOrDefault().Ten) : "",
                 MaNhomCapHoc = Truong.MaNhomCapHoc,
-                TenNhomCapHoc = !string.IsNullOrEmpty(Truong.MaNhomCapHoc) ? (_context.DmNhomCapHoc.Where(x => x.Ma == Truong.MaNhomCapHoc).FirstOrDefault().Ten) : "",
+                MaCapHoc = !string.IsNullOrEmpty(Truong.MaNhomCapHoc) ? (_context.DmNhomCapHoc.Where(x => x.Ma == Truong.MaNhomCapHoc).FirstOrDefault().Cap) : "",
                 MaHuyen = Truong.MaHuyen,
-                TenHuyen = !string.IsNullOrEmpty(Truong.MaHuyen) ? (_context.DmHuyen.Where(x => x.Ma == Truong.MaHuyen && x.MaNamHoc == Truong.MaNamHoc).FirstOrDefault().Ten) : "",
                 DsCapHoc = Truong.DSCapHoc,
                 DiaChi = Truong.DiaChi,
                 DienThoai = Truong.DienThoai,
@@ -359,11 +355,11 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 Fax = Truong.Fax,
                 Website = Truong.Website,
                 ThuTu = Truong.ThuTu.HasValue ? Truong.ThuTu.Value : 0,
-                IsCapMN = Truong.IsCapMN,
-                IsCapTH = Truong.IsCapTH,
-                IsCapTHCS = Truong.IsCapTHCS,
-                IsCapTHPT = Truong.IsCapTHPT,
-                IsCapGDTX = Truong.IsCapGDTX,
+                IsCapMN = Truong.IsCapMN.HasValue ? Truong.IsCapMN : null,
+                IsCapTH = Truong.IsCapTH.HasValue ? Truong.IsCapTH : null,
+                IsCapTHCS =  Truong.IsCapTHCS.HasValue ?Truong.IsCapTHCS : null,
+                IsCapTHPT =  Truong.IsCapTHPT.HasValue ?Truong.IsCapTHPT : null,
+                IsCapGDTX = Truong.IsCapGDTX.HasValue ? Truong.IsCapGDTX : null,
             };
             return Ok(TruongVm);
         }

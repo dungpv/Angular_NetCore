@@ -15,7 +15,8 @@ export class Truong {
     maLoaiHinh: string; 
     tenLoaiHinh: string;   
     maLoaiTruong: string; 
-    tenLoaiTruong: string;    
+    tenLoaiTruong: string;  
+    maCapHoc: string;  
     diaChi: string; 
     dienThoai: string; 
     email: string; 
