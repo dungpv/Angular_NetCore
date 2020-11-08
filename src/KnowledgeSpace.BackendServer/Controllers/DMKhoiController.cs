@@ -50,6 +50,20 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             return Ok(dmKhoiVms);
         }
-        
+        [HttpGet("{ma}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetKhoiByMa(string ma)
+        {
+            var dmKhoi = await _context.DmKhoi.FindAsync(ma);
+
+            var dmKhoiVm = new DMKhoiVm()
+            {
+                Ma = dmKhoi.Ma,
+                Ten = dmKhoi.Ten,
+                ThuTu = dmKhoi.ThuTu,
+                MaCapHoc = dmKhoi.MaCapHoc,
+            };
+            return Ok(dmKhoiVm);
+        }
     }
 }

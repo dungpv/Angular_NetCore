@@ -16,6 +16,7 @@ namespace KnowledgeSpace.BackendServer.Constants
         CONTENT_REPORT,
         CONTENT_PHONGGD,
         CONTENT_TRUONG,
+        CONTENT_LOP,
 
         STATISTIC,
         STATISTIC_MONTHLY_NEWMEMBER,

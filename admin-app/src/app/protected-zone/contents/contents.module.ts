@@ -40,6 +40,8 @@ import { PhonggdComponent } from './phonggd/phonggd.component';
 import { PhonggdDetailComponent } from './phonggd/phonggd-detail/phonggd-detail.component';
 import { TruongComponent } from './truong/truong.component';
 import { TruongDetailComponent } from './truong/truong-detail/truong-detail.component';
+import { LopComponent } from './lop/lop.component';
+import { LopDetailComponent } from './lop/lop-detail/lop-detail.component';
 
 
 @NgModule({
@@ -58,6 +60,8 @@ import { TruongDetailComponent } from './truong/truong-detail/truong-detail.comp
     PhonggdDetailComponent,
     TruongComponent,
     TruongDetailComponent,
+    LopComponent,
+    LopDetailComponent,
   ],
   imports: [
     CommonModule,

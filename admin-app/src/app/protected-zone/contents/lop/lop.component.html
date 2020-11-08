@@ -1,0 +1,100 @@
+<p>{{screenTitle}}</p>
+<div class="animated fadeIn">
+    <p-panel #pnl>
+        <p-header>
+            <div class="ui-g-6">
+                <button appPermission appFunction="CONTENT_LOP" appAction="CREATE" pButton type="button" label="Thêm"
+                    icon="fa fa-plus" (click)="showAddModal()"></button>
+                <button appPermission appFunction="CONTENT_LOP" appAction="DELETE" pButton type="button" label="Xóa"
+                    icon="fa fa-trash" class="ui-button-danger" *ngIf="selectedItems.length > 0"
+                    (click)="deleteItems()"></button>
+                <button appPermission appFunction="CONTENT_LOP" appAction="UPDATE" pButton type="button" label="Sửa"
+                    icon="fa fa-edit" class="ui-button-warning" *ngIf="selectedItems.length== 1"
+                    (click)="showEditModal()"></button>
+            </div>
+            <div class="ui-g-2">
+                <select class="form-control form-control-sm" name="maSoGD" id="maSoGD" (change)="selectSoGD()"
+                    [(ngModel)]="maSoGD">
+                    <option value="">-- Chọn Sở GD&ĐT --</option>
+                    <option value="{{i.ma}}" *ngFor="let i of soGD">{{i.ten}}</option>
+                </select>
+            </div>
+            <div class="ui-g-2">
+                <select class="form-control form-control-sm" name="maCapHoc" id="maCapHoc" (change)="selectCapHoc()"
+                    [(ngModel)]="maCapHoc">
+                    <option value="">-- Chọn cấp học --</option>
+                    <option value="{{i.ma}}" *ngFor="let i of capHoc">{{i.ten}}</option>
+                </select>
+            </div> 
+            <div class="ui-g-2">
+                <select class="form-control form-control-sm" name="maTruong" id="maTruong" (change)="selectTruong()"
+                    [(ngModel)]="maTruong">
+                    <option value="">-- Chọn trường --</option>
+                    <option value="{{i.ma}}" *ngFor="let i of truong">{{i.ten}}</option>
+                </select>
+            </div>                       
+            
+        </p-header>
+
+        <p-table #dt [value]="items" selectionMode="multiple" [(selection)]="selectedItems" [metaKeySelection]="true"
+            [responsive]="true" [scrollable]="true">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 35px">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th [pSortableColumn]="'ten'">Tên
+                        <p-sortIcon [field]="'ten'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'tenTruong'">Trường
+                        <p-sortIcon [field]="'tenTruong'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'tenCapHoc'">Cấp học
+                        <p-sortIcon [field]="'tenCapHoc'"></p-sortIcon>
+                    </th>    
+                    <th [pSortableColumn]="'tenKhoi'">Khối
+                        <p-sortIcon [field]="'tenKhoi'"></p-sortIcon>
+                    </th>   
+                    <th [pSortableColumn]="'tenSoBuoiHocTrenTuan'">Số buổi học trên tuần
+                        <p-sortIcon [field]="'tenSoBuoiHocTrenTuan'"></p-sortIcon>
+                    </th>   
+                    <th [pSortableColumn]="'textTrangThai'">Trạng thái
+                        <p-sortIcon [field]="'textTrangThai'"></p-sortIcon>
+                    </th>                                                       
+                    <th [pSortableColumn]="'thuTu'">Thứ tự
+                        <p-sortIcon [field]="'thuTu'"></p-sortIcon>
+                    </th>
+                </tr>
+
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr [pSelectableRow]="row">
+                    <td style="width: 35px;">
+                        <span class="ui-column-title">Lựa chọn</span>
+                        <p-tableCheckbox [value]="row"></p-tableCheckbox>
+                    </td>
+                    <td>{{row.ten}}</td>
+                    <td>{{row.tenTruong}}</td>
+                    <td>{{row.tenCapHoc}}</td>
+                    <td>{{row.tenKhoi}}</td>     
+                    <td>{{row.tenSoBuoiHocTrenTuan}}</td>         
+                    <td>{{row.textTrangThai}}</td>                                                                  
+                    <td>{{row.thuTu}}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                <div style="text-align: left">
+                    Tổng số bản ghi: {{totalRecords | number}}
+                </div>
+            </ng-template>
+        </p-table>
+        <p-footer>
+            <p-paginator [rows]="pageSize" [totalRecords]="totalRecords" (onPageChange)="pageChanged($event)"
+                [rowsPerPageOptions]="[10,20,50,100]"></p-paginator>
+            <p-blockUI [target]="pnl" [blocked]="blockedPanel">
+                <p-progressSpinner [style]="{width: '100px', height: '100px', position:'absolute',top:'25%',left:'50%'}"
+                    strokeWidth="2" animationDuration=".5s"></p-progressSpinner>
+            </p-blockUI>
+        </p-footer>
+    </p-panel>
+</div>

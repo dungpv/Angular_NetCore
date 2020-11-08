@@ -39,4 +39,11 @@ export class TruongService extends BaseService {
         return this.http.get<Truong>(`${environment.apiUrl}/api/Truong/${id}`, { headers: this._sharedHeaders })
             .pipe(catchError(this.handleError));
     }
+    getTruongBySoGDByNamHoc(maSoGD, maCapHoc) {
+        return this.http.get<Truong[]>(`${environment.apiUrl}/api/Truong/maSoGD=${maSoGD}
+            &maNamHoc=2019&maCapHoc=${maCapHoc}`, { headers: this._sharedHeaders })
+            .pipe(map((response: Truong[]) => {
+                return response;
+            }), catchError(this.handleError));
+    }
 }

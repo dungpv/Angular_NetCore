@@ -204,47 +204,64 @@ namespace KnowledgeSpace.BackendServer.Controllers
         // URL: GET
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetTruongBySoGDByNamHoc(string maSoGD, int maNamHoc)
+        public async Task<IActionResult> GetTruongBySoGDByNamHoc(string maSoGD, int maNamHoc, string maCapHoc)
         {
-            var query = from p in _context.Truong
-                        join s in _context.SoGD on p.MaSoGD equals s.Ma
-                        join h in _context.DmHuyen on new { A= p.MaHuyen,B= p.MaNamHoc } equals new {A= h.Ma, B=h.MaNamHoc }
-                        join v in _context.DmVung on new { A = p.MaVung } equals new { A = v.Ma }
-                        select new { p, s, h, v };
+            var query = from t in _context.Truong
+                        join s in _context.SoGD on t.MaSoGD equals s.Ma
+                        join h in _context.DmHuyen on new { A = t.MaHuyen, B = t.MaNamHoc } equals new { A = h.Ma, B = h.MaNamHoc }
+                        join v in _context.DmVung on new { A = t.MaVung } equals new { A = v.Ma }
+                        select new { t, s, h, v };
             if (!string.IsNullOrEmpty(maSoGD))
             {
-                query = query.Where(x => x.p.MaSoGD == maSoGD);
+                query = query.Where(x => x.t.MaSoGD == maSoGD);
             }
-            query = query.Where(x => x.p.MaNamHoc == maNamHoc);
+            if (maCapHoc == SysCapHoc.MamNon)
+                query = query.Where(x => x.t.IsCapMN == 1);
+            if (maCapHoc == SysCapHoc.C1)
+                query = query.Where(x => x.t.IsCapTH == 1);
+            if (maCapHoc == SysCapHoc.C2)
+                query = query.Where(x => x.t.IsCapTHCS == 1);
+            if (maCapHoc == SysCapHoc.C3)
+                query = query.Where(x => x.t.IsCapTHPT == 1);
+            if (maCapHoc == SysCapHoc.GDTX)
+                query = query.Where(x => x.t.IsCapGDTX == 1);
+
+            query = query.Where(x => x.t.MaNamHoc == maNamHoc);
             if (query == null)
                 return NotFound(new ApiNotFoundResponse($"Truong with maSoGD: {maSoGD} is not found"));
             var TruongVm = await query.Select(u => new TruongVm()
             {
-                Ma = u.p.Ma,
-                Ten = u.p.Ten,
-                MaSoGD = u.s.Ma,
+                Id = u.t.Id,
+                Ma = u.t.Ma,
+                Ten = u.t.Ten,
+                MaSoGD = u.t.Ma,
                 TenSoGD = u.s.Ten,
-                MaPhongGD = u.p.MaPhongGD,
-                IdPhongGD = u.p.IdPhongGD.HasValue ? u.p.IdPhongGD.Value : 0,
-                TenPhongGD = (_context.PhongGD.Where(x => x.Id == u.p.IdPhongGD).FirstOrDefault().Ten),
-                MaTinh = u.p.MaTinh,
-                TenTinh = (_context.DmTinh.Where(x => x.Ma == u.p.MaTinh).FirstOrDefault().Ten),
-                MaLoaiHinh = u.p.MaLoaiHinh,
-                TenLoaiHinh = (_context.DmLoaiHinh.Where(x => x.Ma == u.p.MaLoaiHinh && x.MaNamHoc == u.p.MaNamHoc).FirstOrDefault().Ten),
-                MaLoaiTruong = u.p.MaLoaiTruong,
-                TenLoaiTruong = (_context.DmLoaiTruong.Where(x => x.Ma == u.p.MaLoaiTruong).FirstOrDefault().Ten),
-                MaNhomCapHoc = u.p.MaNhomCapHoc,
-                TenNhomCapHoc = (_context.DmNhomCapHoc.Where(x => x.Ma == u.p.MaNhomCapHoc).FirstOrDefault().Ten),
-                MaCapHoc = (_context.DmNhomCapHoc.Where(x => x.Ma == u.p.MaNhomCapHoc).FirstOrDefault().Cap),
+                MaPhongGD = u.t.MaPhongGD,
+                IdPhongGD = u.t.IdPhongGD.HasValue ? u.t.IdPhongGD.Value : 0,
+                TenPhongGD = !string.IsNullOrEmpty(u.t.MaPhongGD) ? (_context.PhongGD.Where(x => x.Id == u.t.IdPhongGD).FirstOrDefault().Ten) : "",
+                MaTinh = u.t.MaTinh,
+                TenTinh = !string.IsNullOrEmpty(u.t.MaTinh) ? (_context.DmTinh.Where(x => x.Ma == u.t.MaTinh).FirstOrDefault().Ten) : "",
+                MaLoaiHinh = u.t.MaLoaiHinh,
+                TenLoaiHinh = !string.IsNullOrEmpty(u.t.MaLoaiHinh) ? (_context.DmLoaiHinh.Where(x => x.Ma == u.t.MaLoaiHinh && x.MaNamHoc == u.t.MaNamHoc).FirstOrDefault().Ten) : "",
+                MaLoaiTruong = u.t.MaLoaiTruong,
+                TenLoaiTruong = !string.IsNullOrEmpty(u.t.MaLoaiTruong) ? (_context.DmLoaiTruong.Where(x => x.Ma == u.t.MaLoaiTruong).FirstOrDefault().Ten) : "",
+                MaNhomCapHoc = u.t.MaNhomCapHoc,
+                TenNhomCapHoc = !string.IsNullOrEmpty(u.t.MaNhomCapHoc) ? (_context.DmNhomCapHoc.Where(x => x.Ma == u.t.MaNhomCapHoc).FirstOrDefault().Ten) : "",
+                MaCapHoc = !string.IsNullOrEmpty(u.t.MaNhomCapHoc) ? (_context.DmNhomCapHoc.Where(x => x.Ma == u.t.MaNhomCapHoc).FirstOrDefault().Cap) : "",
                 MaHuyen = u.h.Ma,
                 TenHuyen = u.h.Ten,
-                DsCapHoc = u.p.DSCapHoc,
-                DiaChi = u.p.DiaChi,
-                DienThoai = u.p.DienThoai,
-                Email = u.p.Email,
-                Fax = u.p.Fax,
-                Website = u.p.Website,
-                ThuTu = u.p.ThuTu.HasValue ? u.p.ThuTu.Value : 0,
+                DsCapHoc = u.t.DSCapHoc,
+                DiaChi = u.t.DiaChi,
+                DienThoai = u.t.DienThoai,
+                Email = u.t.Email,
+                Fax = u.t.Fax,
+                Website = u.t.Website,
+                ThuTu = u.t.ThuTu.HasValue ? u.t.ThuTu.Value : 0,
+                IsCapMN = u.t.IsCapMN,
+                IsCapTH = u.t.IsCapTH,
+                IsCapTHCS = u.t.IsCapTHCS,
+                IsCapTHPT = u.t.IsCapTHPT,
+                IsCapGDTX = u.t.IsCapGDTX,
 
             }).ToListAsync();
 

@@ -24,4 +24,5 @@ export * from './dmhuyen.model';
 export * from './base-danhmuc.model';
 export * from './dmnhomcaphoc.model';
 export * from './truong.model';
+export * from './lop.model';
 

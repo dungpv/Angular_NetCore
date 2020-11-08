@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KnowledgeSpace.BackendServer.Authorization;
+using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
 using KnowledgeSpace.BackendServer.Helpers;
+using KnowledgeSpace.ViewModels;
 using KnowledgeSpace.ViewModels.CSDL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -47,6 +50,11 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
                 LopDetail.MaPhongGD = request.MaPhongGD;
                 LopDetail.IdPhongGD = idPhongGd;
             }
+            else
+            {
+                LopDetail.MaPhongGD = null;
+                LopDetail.IdPhongGD = null;
+            }
 
             LopDetail.Ma = request.Ma;
             LopDetail.MaNamHoc = request.MaNamHoc;
@@ -62,7 +70,6 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
             LopDetail.ThuTu = request.ThuTu;
             LopDetail.TrangThai = request.TrangThai;
             LopDetail.NgayTao = DateTime.Now;
-            LopDetail.NguoiTao = request.NguoiTao.Value;
 
             _context.Lop.Add(LopDetail);
             var result = await _context.SaveChangesAsync();
@@ -82,7 +89,7 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLop(string id, [FromBody] LopCreateRequest request)
+        public async Task<IActionResult> PutLop(decimal id, [FromBody] LopCreateRequest request)
         {
             _logger.LogInformation("Begin PutLop API");
             var Lop = await _context.Lop.FindAsync(id);
@@ -97,6 +104,11 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
 
                 Lop.MaPhongGD = request.MaPhongGD;
                 Lop.IdPhongGD = idPhongGd;
+            }
+            else
+            {
+                Lop.MaPhongGD = null;
+                Lop.IdPhongGD = null;
             }
 
             Lop.Ma = request.Ma;
@@ -113,7 +125,6 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
             Lop.ThuTu = request.ThuTu;
             Lop.TrangThai = request.TrangThai;
             Lop.NgaySua = DateTime.Now;
-            Lop.NguoiSua = request.NguoiSua.Value;
 
             _context.Lop.Update(Lop);
             var result = await _context.SaveChangesAsync();
@@ -172,6 +183,57 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
 
             return Ok(LopVm);
         }
+        // URL: GET: http://localhost:5001/api/Lop/?quer
+        [HttpGet("filter")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetLopPaging(string filter, int pageIndex, int pageSize, string maSoGD, string maTruong, int maNamHoc, string maCapHoc)
+        {
+            var query = from Lop in _context.Lop
+                        join truong in _context.Truong on Lop.IdTruong equals truong.Id
+                        select new { Lop, truong };
+            if (!string.IsNullOrEmpty(maTruong))
+            {
+                query = query.Where(x => x.truong.Ma == maTruong);
+            }
+            query = query.Where(x => x.Lop.MaNamHoc == maNamHoc);
+            if (query == null)
+                return NotFound(new ApiNotFoundResponse($"Lop with maTruong: {maTruong} is not found"));
+            var totalRecords = await query.CountAsync();
+            var items = await query.Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize).Select(u => new LopVm()
+            {
+                Ma = u.Lop.Ma,
+                Ten = u.Lop.Ten,
+                MaSoGD = u.Lop.MaSoGD,
+                TenSoGD = !string.IsNullOrEmpty(u.Lop.MaSoGD) ? (_context.SoGD.Where(x => x.Ma == u.Lop.MaSoGD).FirstOrDefault().Ten) : "",
+                MaPhongGD = u.truong.MaPhongGD,
+                IdPhongGD = u.truong.IdPhongGD.Value,
+                TenPhongGD = !string.IsNullOrEmpty(u.truong.MaPhongGD) ? (_context.PhongGD.Where(x => x.Id == u.truong.IdPhongGD).FirstOrDefault().Ten) : "",
+                IdTruong = u.truong.Id,
+                MaTruong = u.truong.Ma,
+                TenTruong = !string.IsNullOrEmpty(u.truong.Ma) ? (_context.Truong.Where(x => x.Ma == u.truong.Ma && x.MaNamHoc == u.truong.MaNamHoc).FirstOrDefault().Ten) : "",
+                MaKhoi = u.Lop.MaKhoi,
+                TenKhoi = !string.IsNullOrEmpty(u.Lop.MaKhoi) ? (_context.DmKhoi.Where(x => x.Ma == u.Lop.MaKhoi).FirstOrDefault().Ten) : "",
+                MaNhomTuoiMN = u.Lop.MaNhomTuoiMN,
+                TenNhomTuoiMN = !string.IsNullOrEmpty(u.Lop.MaNhomTuoiMN) ? (_context.DmNhomTuoiMN.Where(x => x.Ma == u.Lop.MaNhomTuoiMN).FirstOrDefault().Ten) : "",
+                MaSoBuoiHocTrenTuan = u.Lop.MaSoBuoiHocTrenTuan,
+                TenSoBuoiHocTrenTuan = !string.IsNullOrEmpty(u.Lop.MaSoBuoiHocTrenTuan) ? (_context.DmSoBuoiHocTrenTuan.Where(x => x.Ma == u.Lop.MaSoBuoiHocTrenTuan).FirstOrDefault().Ten) : "",
+                MaCapHoc = u.Lop.MaCapHoc,
+                ThuTu = u.Lop.ThuTu.Value,
+                TrangThai = u.Lop.TrangThai,
+                IsLopGhep = u.Lop.IsLopGhep.HasValue ? u.Lop.IsLopGhep.Value : 0,
+                TextTrangThai = u.Lop.TrangThai == 1 ? "Hiệu lực" : "Không hiệu lực",
+                TextLopGhep = u.Lop.IsLopGhep.HasValue ? (u.Lop.IsLopGhep.Value == 1 ? "Lớp ghép" : "") : "",
+
+            }).ToListAsync();
+
+            var pagination = new Pagination<LopVm>
+            {
+                Items = items,
+                TotalRecords = totalRecords,
+            };
+            return Ok(pagination);
+        }
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetById(decimal id)
@@ -185,19 +247,13 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
                 Ma = Lop.Ma,
                 Ten = Lop.Ten,
                 MaSoGD = Lop.MaSoGD,
-                TenSoGD = (_context.SoGD.Where(x => x.Ma == Lop.MaSoGD).FirstOrDefault().Ten),
                 MaPhongGD = Lop.MaPhongGD,
                 IdPhongGD = Lop.IdPhongGD.Value,
-                TenPhongGD = (_context.PhongGD.Where(x => x.Id == Lop.IdPhongGD).FirstOrDefault().Ten),
                 IdTruong = Lop.IdTruong,
                 MaTruong = Lop.MaTruong,
-                TenTruong = (_context.Truong.Where(x => x.Ma == Lop.MaTruong && x.MaNamHoc == Lop.MaNamHoc).FirstOrDefault().Ten),
                 MaKhoi = Lop.MaKhoi,
-                TenKhoi = (_context.DmKhoi.Where(x => x.Ma == Lop.MaKhoi).FirstOrDefault().Ten),
                 MaNhomTuoiMN = Lop.MaNhomTuoiMN,
-                TenNhomTuoiMN = (_context.DmNhomTuoiMN.Where(x => x.Ma == Lop.MaNhomTuoiMN).FirstOrDefault().Ten),
                 MaSoBuoiHocTrenTuan = Lop.MaSoBuoiHocTrenTuan,
-                TenSoBuoiHocTrenTuan = (_context.DmSoBuoiHocTrenTuan.Where(x => x.Ma == Lop.MaSoBuoiHocTrenTuan).FirstOrDefault().Ten),
                 MaCapHoc = Lop.MaCapHoc,
                 ThuTu = Lop.ThuTu.Value,
                 TrangThai = Lop.TrangThai,
@@ -205,6 +261,30 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
             };
             return Ok(LopVm);
         }
+        // URL: DELETE: http://localhost:5001/api/lop/{id}
+        [HttpDelete("{id}")]
+        [ClaimRequirement(FunctionCode.CONTENT_LOP, CommandCode.DELETE)]
+        public async Task<IActionResult> DeleteLop(decimal id)
+        {
+            var lop = await _context.Lop.FindAsync(id);
+            if (lop == null)
+                return NotFound();
 
+            _context.Lop.Remove(lop);
+            var result = await _context.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                var lopVm = new LopVm()
+                {
+                    Id = lop.Id,
+                    Ma = lop.Ma,
+                    Ten = lop.Ten,
+                    MaCapHoc = lop.MaCapHoc,
+                };
+                return Ok(lopVm);
+            }
+            return BadRequest();
+        }
     }
 }

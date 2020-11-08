@@ -1,18 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageConstants } from '@app/shared/constants';
-import { TruongService, PhonggdService, SogdService, DanhMucService, NotificationService } from '@app/shared/services';
-import { Pagination, Phonggd, Sogd, Truong, BaseDanhMuc } from '@app/shared/models';
+import { TruongService, SogdService, LopService, DanhMucService, NotificationService } from '@app/shared/services';
+import { Pagination, Lop, Sogd, Truong, BaseDanhMuc } from '@app/shared/models';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Subscription } from 'rxjs';
-import { BaseComponent } from '@app/protected-zone/base/base.component';;
-import { TruongDetailComponent } from './truong-detail/truong-detail.component';
+import { BaseComponent } from '@app/protected-zone/base/base.component';
+import { LopDetailComponent } from './lop-detail/lop-detail.component';
 
 @Component({
-  selector: 'app-truong',
-  templateUrl: './truong.component.html',
-  styleUrls: ['./truong.component.css']
+  selector: 'app-lop',
+  templateUrl: './lop.component.html',
+  styleUrls: ['./lop.component.css']
 })
-export class TruongComponent extends BaseComponent implements OnInit, OnDestroy {
+export class LopComponent extends BaseComponent implements OnInit, OnDestroy {
 
   private subscription = new Subscription();
   public screenTitle: string;
@@ -30,18 +30,20 @@ export class TruongComponent extends BaseComponent implements OnInit, OnDestroy 
   public keyword = '';
   public maSoGD = '';
   public maCapHoc = '';
+  public maTruong = '';
   // Role
   public items: any[];
   public selectedItems = [];
   soGD: Sogd[];
   capHoc: BaseDanhMuc[];
-  constructor(private phonggdService: PhonggdService,
+  truong: Truong[];
+  constructor(private lopService: LopService,
     private sogdService: SogdService,
     private truongService: TruongService,
     private danhMucService: DanhMucService,
     private notificationService: NotificationService,
     private modalService: BsModalService) {
-    super('CONTENT_TRUONG');
+    super('CONTENT_LOP');
   }
 
   ngOnInit(): void {
@@ -49,6 +51,7 @@ export class TruongComponent extends BaseComponent implements OnInit, OnDestroy 
     this.loadData();
     this.getSoGD();
     this.getCapHoc();
+    this.getTruongBySoGDByCapHoc();
   }
   getSoGD(): void {
     this.sogdService.GetSoGD().subscribe(sogd => this.soGD = sogd);
@@ -56,23 +59,31 @@ export class TruongComponent extends BaseComponent implements OnInit, OnDestroy 
   getCapHoc(): void {
     this.danhMucService.getDMCapHoc().subscribe(caphoc => this.capHoc = caphoc);
   }  
+  getTruongBySoGDByCapHoc(): void {
+    this.truongService.getTruongBySoGDByNamHoc(this.soGD, this.capHoc).subscribe(truong => this.truong = truong);
+  }   
   selectSoGD() {
+    this.getTruongBySoGDByCapHoc();
     this.loadData();
   }
   selectCapHoc() {
+    this.getTruongBySoGDByCapHoc();
     this.loadData();
   } 
+  selectTruong() {
+    this.loadData();
+  }  
   loadData(selectedId = null) {
     this.blockedPanel = true;
-    this.subscription.add(this.truongService.getAllPaging(this.keyword, this.pageIndex, this.pageSize, this.maSoGD, this.maCapHoc)
-      .subscribe((response: Pagination<Truong>) => {
+    this.subscription.add(this.lopService.getAllPaging(this.keyword, this.pageIndex, this.pageSize, this.maSoGD, this.maTruong, this.maCapHoc)
+      .subscribe((response: Pagination<Lop>) => {
         this.processLoadData(selectedId, response);
         setTimeout(() => { this.blockedPanel = false; }, 1000);
       }, error => {
         setTimeout(() => { this.blockedPanel = false; }, 1000);
       }));
   }
-  private processLoadData(selectedId = null, response: Pagination<Truong>) {
+  private processLoadData(selectedId = null, response: Pagination<Lop>) {
     this.items = response.items;
     this.pageIndex = this.pageIndex;
     this.pageSize = this.pageSize;
@@ -91,7 +102,7 @@ export class TruongComponent extends BaseComponent implements OnInit, OnDestroy 
   }
 
   showAddModal() {
-    this.bsModalRef = this.modalService.show(TruongDetailComponent,
+    this.bsModalRef = this.modalService.show(LopDetailComponent,
       {
         class: 'modal-lg',
         backdrop: 'static'
@@ -110,7 +121,7 @@ export class TruongComponent extends BaseComponent implements OnInit, OnDestroy 
     const initialState = {
       entityId: this.selectedItems[0].id
     };
-    this.bsModalRef = this.modalService.show(TruongDetailComponent,
+    this.bsModalRef = this.modalService.show(LopDetailComponent,
       {
         initialState: initialState,
         class: 'modal-lg',
@@ -129,7 +140,7 @@ export class TruongComponent extends BaseComponent implements OnInit, OnDestroy 
   }
   deleteItemsConfirm(id) {
     this.blockedPanel = true;
-    this.subscription.add(this.truongService.delete(id).subscribe(() => {
+    this.subscription.add(this.lopService.delete(id).subscribe(() => {
       this.notificationService.showSuccess(MessageConstants.DELETED_OK_MSG);
       this.loadData();
       this.selectedItems = [];

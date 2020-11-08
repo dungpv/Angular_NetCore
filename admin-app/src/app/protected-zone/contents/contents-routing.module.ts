@@ -9,6 +9,7 @@ import { KnowledgeBasesDetailComponent } from './knowledge-bases/knowledge-bases
 import { SogdComponent } from './sogd/sogd.component';
 import { PhonggdComponent } from './phonggd/phonggd.component';
 import { TruongComponent } from './truong/truong.component';
+import { LopComponent } from './lop/lop.component';
 
 const routes: Routes = [
     {
@@ -96,6 +97,14 @@ const routes: Routes = [
         component: TruongComponent,
         data: {
             functionCode: 'CONTENT_TRUONG'
+        },
+        canActivate: [AuthGuard]
+    }, 
+    {
+        path: 'lop',
+        component: LopComponent,
+        data: {
+            functionCode: 'CONTENT_LOP'
         },
         canActivate: [AuthGuard]
     }

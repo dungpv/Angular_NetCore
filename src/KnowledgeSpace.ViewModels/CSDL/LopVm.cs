@@ -27,7 +27,9 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string TenSoBuoiHocTrenTuan { get; set; }
         public int? ThuTu { get; set; }
         public int? TrangThai { get; set; }
+        public string TextTrangThai { get; set; }
         public int? IsLopGhep { get; set; }
+        public string TextLopGhep { get; set; }
 
     }
 }

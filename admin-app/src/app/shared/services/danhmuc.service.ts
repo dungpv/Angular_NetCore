@@ -91,4 +91,24 @@ export class DanhMucService extends BaseService {
         return this.http.get<DMNhomCapHoc>(`${environment.apiUrl}/api/DMNhomCapHoc/${ma}`, { headers: this._sharedHeaders })
             .pipe(catchError(this.handleError));
     }
+    getDMKhoi(maCapHoc='') {
+        return this.http.get<BaseDanhMuc[]>(`${environment.apiUrl}/api/DmKhoi?maCapHoc=${maCapHoc}`, { headers: this._sharedHeaders })
+            .pipe(map((response: BaseDanhMuc[]) => {
+                return response;
+            }), catchError(this.handleError));
+    }
+    getDMKhoiByMa(ma) {
+        return this.http.get<BaseDanhMuc>(`${environment.apiUrl}/api/DmKhoi/${ma}`, { headers: this._sharedHeaders })
+            .pipe(catchError(this.handleError));
+    }
+    getDMSoBuoiHocTrenTuan() {
+        return this.http.get<BaseDanhMuc[]>(`${environment.apiUrl}/api/DMSoBuoiHocTrenTuan`, { headers: this._sharedHeaders })
+            .pipe(map((response: BaseDanhMuc[]) => {
+                return response;
+            }), catchError(this.handleError));
+    }
+    getDMSoBuoiHocTrenTuanByMa(ma) {
+        return this.http.get<BaseDanhMuc>(`${environment.apiUrl}/api/DMSoBuoiHocTrenTuan/${ma}`, { headers: this._sharedHeaders })
+            .pipe(catchError(this.handleError));
+    }
 }
