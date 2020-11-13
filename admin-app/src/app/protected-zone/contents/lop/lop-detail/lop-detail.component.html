@@ -1,1 +1,140 @@
-<p>lop-detail works!</p>
+<div class="modal-header">
+    <h4 class="modal-title pull-left">{{dialogTitle}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form class="form-horizontal form-label-left" novalidate [formGroup]="entityForm">
+    <div class="modal-body div-scroll">
+        <p-panel #pnl header="Thông tin" [toggleable]="true" [collapsed]="false" styleClass="m-b-10">
+            <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid">
+
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Tên:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <input type="text" pInputText formControlName="ten">
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="ten"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Sở GD&ĐT:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <p-dropdown [options]="soGD" [style]="{'width':'100%'}" (change)="getDanhMucBySoGD($event)"  placeholder="Chọn Sở GD&ĐT"
+                            filter="true" [showClear]="true" formControlName="maSoGD">
+                        </p-dropdown>
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="maSoGD"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>                
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Cấp học:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <select formControlName="maCapHoc" (change)="getDanhMucByCapHoc($event)"  class="form-control">
+                            <option value="0" selected="true">Chọn cấp học</option>
+                            <option [value]="ch.ma" *ngFor="let ch of dmCapHoc">{{ch.ten}}</option>
+                        </select>
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="maCapHoc"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>   
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Trường học:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <select formControlName="maTruong" class="form-control">
+                            <option value="0" selected="true">Chọn trường học</option>
+                            <option [value]="ch.ma" *ngFor="let ch of truong">{{ch.ten}}</option>
+                        </select>
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="maTruong"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>                                         
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Khối học:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <select formControlName="maKhoi" class="form-control">
+                            <option value="0" selected="true">Chọn khối học</option>
+                            <option [value]="lh.ma" *ngFor="let lh of dmKhoi">{{lh.ten}}</option>
+                        </select>
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="maKhoi"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>    
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Số buổi học/tuần:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <select formControlName="maSoBuoiHocTrenTuan" class="form-control">
+                            <option value="0" selected="true">Chọn Số buổi học/tuần</option>
+                            <option [value]="lh.ma" *ngFor="let lh of dmSoBuoiHocTrenTuan">{{lh.ten}}</option>
+                        </select>
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="maSoBuoiHocTrenTuan"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>   
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Thứ tự:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <input type="number" pInputText formControlName="thuTu">
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <app-validation-message [entityForm]="entityForm" fieldName="thuTu"
+                            [validationMessages]="validation_messages"></app-validation-message>
+                    </div>
+                </div>                
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Trạng thái:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <p-checkbox [(ngModel)]="selectedTrangThai" inputId="trangThai" binary="true" name="group1" formControlName="trangThai"></p-checkbox>
+                    </div>                    
+                </div> 
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        <span class="required">Lớp ghép:</span>
+                    </div>
+                    <div class="ui-grid-col-6">
+                        <p-checkbox [(ngModel)]="selectedLopGhep" inputId="isLopGhep" binary="true" name="group1" formControlName="isLopGhep"></p-checkbox>
+                    </div>
+                </div>                                                   
+
+
+            </div>
+            <p-blockUI [target]="pnl" [blocked]="blockedPanel">
+                <p-progressSpinner [style]="{width: '100px', height: '100px', position:'absolute',top:'25%',left:'50%'}"
+                    strokeWidth="2" animationDuration=".5s"></p-progressSpinner>
+            </p-blockUI>
+        </p-panel>
+    </div>
+    <div class="modal-footer">
+        <button type="button" (click)="saveChange()" class="btn btn-primary">Lưu lại</button>
+        &nbsp;
+        <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Đóng</button>
+    </div>
+</form>

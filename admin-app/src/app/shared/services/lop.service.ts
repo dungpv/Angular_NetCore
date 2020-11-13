@@ -14,6 +14,7 @@ export class LopService extends BaseService {
         this._sharedHeaders = this._sharedHeaders.set('Content-Type', 'application/json');
     }
     add(entity: Lop) {
+        console.log(JSON.stringify(entity));
         return this.http.post(`${environment.apiUrl}/api/Lop`, JSON.stringify(entity), { headers: this._sharedHeaders })
             .pipe(catchError(this.handleError));
     }

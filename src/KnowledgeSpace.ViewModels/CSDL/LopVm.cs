@@ -23,6 +23,7 @@ namespace KnowledgeSpace.ViewModels.CSDL
         public string MaNhomTuoiMN { get; set; }
         public string TenNhomTuoiMN { get; set; }
         public string MaCapHoc { get; set; }
+        public string TenCapHoc { get; set; }
         public string MaSoBuoiHocTrenTuan { get; set; }
         public string TenSoBuoiHocTrenTuan { get; set; }
         public int? ThuTu { get; set; }

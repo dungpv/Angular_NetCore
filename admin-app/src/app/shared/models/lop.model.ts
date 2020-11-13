@@ -6,7 +6,10 @@ export class Lop {
     tenSoGD: string; 
     idPhongGD: number;  
     maPhongGD: string; 
-    tenPhongGD: string;  
+    tenPhongGD: string; 
+    idTruong: number; 
+    maTruong: string; 
+    tenTruong: string; 
     maCapHoc: string; 
     tenCapHoc: string;    
     maKhoi: string; 

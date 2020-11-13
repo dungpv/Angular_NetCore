@@ -40,12 +40,12 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
                 return BadRequest(new ApiBadRequestResponse($"Lop with id {request.Id} is existed."));
 
             var LopDetail = new Lop() { };
-
+            request.MaNamHoc = 2019;
             if (request.MaCapHoc == SysCapHoc.MamNon || request.MaCapHoc == SysCapHoc.C1 || request.MaCapHoc == SysCapHoc.C2)
             {
                 decimal? idPhongGd = null;
                 if (!string.IsNullOrEmpty(request.MaPhongGD))
-                    idPhongGd = _context.PhongGD.Where(p => p.Ma == request.MaPhongGD && p.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id; ;
+                    idPhongGd = _context.PhongGD.Where(p => p.Ma == request.MaPhongGD && p.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id; 
 
                 LopDetail.MaPhongGD = request.MaPhongGD;
                 LopDetail.IdPhongGD = idPhongGd;
@@ -55,12 +55,19 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
                 LopDetail.MaPhongGD = null;
                 LopDetail.IdPhongGD = null;
             }
+            decimal? idTruong = null;
+            if (!string.IsNullOrEmpty(request.MaTruong))
+            {
+                idTruong = _context.Truong.Where(t => t.Ma == request.MaTruong && t.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id;
+                LopDetail.IdTruong = idTruong.Value;
+            }    
 
-            LopDetail.Ma = request.Ma;
+
+            LopDetail.Ma = request.Ten;
             LopDetail.MaNamHoc = request.MaNamHoc;
             LopDetail.MaSoGD = request.MaSoGD;
             LopDetail.Ten = request.Ten;
-            LopDetail.IdTruong = request.IdTruong.Value;
+
             LopDetail.MaTruong = request.MaTruong;
             LopDetail.MaKhoi = request.MaKhoi;
             LopDetail.MaNhomTuoiMN = request.MaNhomTuoiMN;
@@ -95,7 +102,7 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
             var Lop = await _context.Lop.FindAsync(id);
             if (Lop == null)
                 return NotFound(new ApiNotFoundResponse($"Cannot found Lop with id {id}"));
-
+            request.MaNamHoc = 2019;
             if (request.MaCapHoc == SysCapHoc.MamNon || request.MaCapHoc == SysCapHoc.C1 || request.MaCapHoc == SysCapHoc.C2)
             {
                 decimal? idPhongGd = null;
@@ -110,12 +117,17 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
                 Lop.MaPhongGD = null;
                 Lop.IdPhongGD = null;
             }
-
-            Lop.Ma = request.Ma;
+            decimal? idTruong = null;
+            if (!string.IsNullOrEmpty(request.MaTruong))
+            {
+                idTruong = _context.Truong.Where(t => t.Ma == request.MaTruong && t.MaNamHoc == request.MaNamHoc).FirstOrDefault().Id;
+                Lop.IdTruong = idTruong.Value;
+            }
+            Lop.Ma = request.Ten;
             Lop.MaNamHoc = request.MaNamHoc;
             Lop.MaSoGD = request.MaSoGD;
             Lop.Ten = request.Ten;
-            Lop.IdTruong = request.IdTruong.Value;
+
             Lop.MaTruong = request.MaTruong;
             Lop.MaKhoi = request.MaKhoi;
             Lop.MaNhomTuoiMN = request.MaNhomTuoiMN;
@@ -191,6 +203,18 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
             var query = from Lop in _context.Lop
                         join truong in _context.Truong on Lop.IdTruong equals truong.Id
                         select new { Lop, truong };
+            if (!string.IsNullOrEmpty(filter))
+            {
+                query = query.Where(x => x.Lop.Ten.Contains(filter));
+            }
+            if (!string.IsNullOrEmpty(maSoGD))
+            {
+                query = query.Where(x => x.truong.MaSoGD == maSoGD);
+            }
+            if (!string.IsNullOrEmpty(maCapHoc))
+            {
+                query = query.Where(x => x.Lop.MaCapHoc == maCapHoc);
+            }
             if (!string.IsNullOrEmpty(maTruong))
             {
                 query = query.Where(x => x.truong.Ma == maTruong);
@@ -202,6 +226,7 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
             var items = await query.Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize).Select(u => new LopVm()
             {
+                Id = u.Lop.Id,
                 Ma = u.Lop.Ma,
                 Ten = u.Lop.Ten,
                 MaSoGD = u.Lop.MaSoGD,
@@ -219,6 +244,7 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
                 MaSoBuoiHocTrenTuan = u.Lop.MaSoBuoiHocTrenTuan,
                 TenSoBuoiHocTrenTuan = !string.IsNullOrEmpty(u.Lop.MaSoBuoiHocTrenTuan) ? (_context.DmSoBuoiHocTrenTuan.Where(x => x.Ma == u.Lop.MaSoBuoiHocTrenTuan).FirstOrDefault().Ten) : "",
                 MaCapHoc = u.Lop.MaCapHoc,
+                TenCapHoc = !string.IsNullOrEmpty(u.Lop.MaCapHoc) ? (_context.DmCapHoc.Where(x => x.Ma == u.Lop.MaCapHoc).FirstOrDefault().Ten) : "",
                 ThuTu = u.Lop.ThuTu.Value,
                 TrangThai = u.Lop.TrangThai,
                 IsLopGhep = u.Lop.IsLopGhep.HasValue ? u.Lop.IsLopGhep.Value : 0,
@@ -244,11 +270,12 @@ namespace KnowledgeSpace.BackendServer.Controllers.Main
 
             var LopVm = new LopVm()
             {
+                Id = Lop.Id,
                 Ma = Lop.Ma,
                 Ten = Lop.Ten,
                 MaSoGD = Lop.MaSoGD,
-                MaPhongGD = Lop.MaPhongGD,
-                IdPhongGD = Lop.IdPhongGD.Value,
+                //MaPhongGD = Lop.MaPhongGD,
+                //IdPhongGD = Lop.IdPhongGD.Value,
                 IdTruong = Lop.IdTruong,
                 MaTruong = Lop.MaTruong,
                 MaKhoi = Lop.MaKhoi,
